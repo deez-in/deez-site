@@ -1,24 +1,42 @@
-# build output
+# Build output & caches
 dist/
-# generated types
 .astro/
+.wrangler/
+.cloudflare/
 
-# dependencies
+# Dependencies
 node_modules/
 
-# logs
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Logs & debug outputs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Temporary files & caches
+.tmp/
+tmp/
+.cache/
 
-# environment variables
-.env
-.env.production
-
-# macOS-specific files
-.DS_Store
-
-# jetbrains setting folder
+# IDE & Editor settings
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
