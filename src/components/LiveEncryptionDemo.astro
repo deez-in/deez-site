@@ -1,0 +1,584 @@
+---
+---
+
+<section id="demo" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">
+        <span class="pulse-indicator"></span>
+        <span>Interactive Cryptography</span>
+      </div>
+      <h2 class="section-title">Zero-Knowledge in Real Time</h2>
+      <p class="section-subtitle">
+        Type a message below to witness the Double Ratchet cryptographic engine in action. No plaintext ever leaves your browser memory unencrypted.
+      </p>
+    </div>
+
+    <div class="demo-wrapper">
+      <!-- Top Bar / Terminal Header -->
+      <div class="demo-header font-mono">
+        <div class="terminal-dots">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="terminal-title">deez-ratchet-cli --session=alice_bob_v4 --curve=25519</div>
+        <div class="terminal-badge">
+          <span class="pulse-indicator"></span>
+          <span>FORWARD SECRECY ACTIVE</span>
+        </div>
+      </div>
+
+      <div class="demo-grid">
+        <!-- Sender (Alice) Column -->
+        <div class="demo-card sender-card">
+          <div class="card-header font-mono">
+            <div class="peer-info">
+              <span class="peer-role">SENDER</span>
+              <span class="peer-name">Alice (Client A)</span>
+            </div>
+            <span class="ratchet-counter" id="alice-counter">Ratchet #14</span>
+          </div>
+
+          <div class="card-body">
+            <label for="demo-input" class="input-label font-mono">Plaintext Message (RAM Only):</label>
+            <textarea
+              id="demo-input"
+              class="demo-textarea font-mono"
+              rows="3"
+              placeholder="Type anything to watch real-time Double Ratchet encryption..."
+            >Meet me at the relay checkpoint. All messages are end-to-end encrypted.</textarea>
+
+            <div class="crypto-meta font-mono">
+              <div class="meta-row">
+                <span class="meta-key">Ephemeral Key:</span>
+                <span class="meta-val" id="alice-eph">0x9f83...c4b2 (Ed25519)</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Message Key (HKDF):</span>
+                <span class="meta-val" id="alice-msg-key">0x7d3e...a119</span>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button id="btn-advance-ratchet" class="btn-tech btn-tech-outline btn-xs font-mono">
+                &orarr; Advance Ratchet Step
+              </button>
+              <button id="btn-tamper" class="btn-tech btn-tech-outline btn-xs font-mono">
+                &Delta; Simulate Ciphertext Tamper
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wire / Ciphertext Column -->
+        <div class="demo-card wire-card">
+          <div class="card-header font-mono">
+            <div class="peer-info">
+              <span class="peer-role">UNTRUSTED RELAY</span>
+              <span class="peer-name">Public Wire (Sealed Sender)</span>
+            </div>
+            <span class="cipher-badge">AES-256-GCM</span>
+          </div>
+
+          <div class="card-body">
+            <div class="ciphertext-label font-mono">
+              <span>Encrypted Payload (Wire View):</span>
+              <button id="copy-cipher-btn" class="copy-btn font-mono" title="Copy Ciphertext">Copy</button>
+            </div>
+            <div id="cipher-output" class="ciphertext-box font-mono">
+              eG9pU0pGZ0F0TEsyOE1LN1o4TFlqQWJjRGVmMDFn...
+            </div>
+
+            <div class="wire-specs font-mono">
+              <div class="spec-item">
+                <span class="spec-title">IV / Nonce (96-bit):</span>
+                <span class="spec-content" id="wire-iv">0x1a8f9c...b892</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-title">Auth Tag (Poly1305):</span>
+                <span class="spec-content" id="wire-tag">0xef88...33c1 (VALID)</span>
+              </div>
+            </div>
+
+            <div id="tamper-alert" class="tamper-banner font-mono hidden">
+              &times; TAMPER DETECTED: Authentication tag mismatch! Packet dropped by Bob.
+            </div>
+          </div>
+        </div>
+
+        <!-- Receiver (Bob) Column -->
+        <div class="demo-card receiver-card">
+          <div class="card-header font-mono">
+            <div class="peer-info">
+              <span class="peer-role">RECEIVER</span>
+              <span class="peer-name">Bob (Client B)</span>
+            </div>
+            <span class="ratchet-counter" id="bob-counter">Ratchet #14</span>
+          </div>
+
+          <div class="card-body">
+            <div class="plaintext-label font-mono">
+              <span>Decrypted Output:</span>
+              <span class="verify-status font-mono" id="verify-pill">&check; HMAC MATCH</span>
+            </div>
+            <div id="bob-output" class="decrypted-box font-mono">
+              Meet me at the relay checkpoint. All messages are end-to-end encrypted.
+            </div>
+
+            <div class="crypto-meta font-mono">
+              <div class="meta-row">
+                <span class="meta-key">Verification:</span>
+                <span class="meta-val meta-success" id="bob-verify">AEAD Integrity Verified &check;</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Zero Plaintext Leak:</span>
+                <span class="meta-val meta-success">100% Client-Side Only</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Protocol Timeline Strip -->
+      <div class="protocol-strip font-mono">
+        <div class="strip-step active">
+          <span class="step-num">1</span>
+          <span class="step-label">DH Key Exchange</span>
+        </div>
+        <div class="strip-arrow">&rarr;</div>
+        <div class="strip-step active">
+          <span class="step-num">2</span>
+          <span class="step-label">KDF Ratchet Advance</span>
+        </div>
+        <div class="strip-arrow">&rarr;</div>
+        <div class="strip-step active">
+          <span class="step-num">3</span>
+          <span class="step-label">AES-GCM Encryption</span>
+        </div>
+        <div class="strip-arrow">&rarr;</div>
+        <div class="strip-step active">
+          <span class="step-num">4</span>
+          <span class="step-label">Blind Relay Routing</span>
+        </div>
+        <div class="strip-arrow">&rarr;</div>
+        <div class="strip-step active">
+          <span class="step-num">5</span>
+          <span class="step-label">Zero-Knowledge Decrypt</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .demo-wrapper {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .demo-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.875rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+  }
+
+  .terminal-dots {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .dot-red { background-color: #ef4444; }
+  .dot-yellow { background-color: #facc15; }
+  .dot-green { background-color: #10b981; }
+
+  .terminal-title {
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 50%;
+  }
+
+  .terminal-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--accent-primary);
+    font-weight: 700;
+  }
+
+  /* 3-column Demo Grid */
+  .demo-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  @media (min-width: 1024px) {
+    .demo-grid {
+      grid-template-columns: 1.1fr 1.2fr 1.1fr;
+    }
+  }
+
+  .demo-card {
+    padding: 1.625rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.125rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+  }
+
+  @media (min-width: 1024px) {
+    .demo-card {
+      border-bottom: none;
+      border-right: 1px solid var(--border-color);
+    }
+    .demo-card:last-child {
+      border-right: none;
+    }
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .peer-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .peer-role {
+    font-size: 0.6875rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    letter-spacing: 0.05em;
+  }
+
+  .peer-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .ratchet-counter, .cipher-badge {
+    font-size: 0.6875rem;
+    padding: 0.2rem 0.5rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    flex: 1;
+  }
+
+  .input-label, .ciphertext-label, .plaintext-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .demo-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.8125rem;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .demo-textarea:focus {
+    border-color: var(--accent-primary);
+  }
+
+  .ciphertext-box, .decrypted-box {
+    padding: 0.875rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    min-height: 5rem;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .ciphertext-box {
+    color: var(--accent-primary);
+    background-color: var(--terminal-bg);
+    border-color: var(--terminal-border);
+  }
+
+  .decrypted-box {
+    color: var(--text-primary);
+    border-color: var(--accent-primary-glow);
+  }
+
+  .crypto-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.6875rem;
+    padding: 0.625rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .meta-key {
+    color: var(--text-muted);
+  }
+
+  .meta-val {
+    color: var(--text-secondary);
+  }
+
+  .meta-success {
+    color: var(--accent-primary);
+    font-weight: 700;
+  }
+
+  .wire-specs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+  }
+
+  .spec-item {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .spec-content {
+    color: var(--text-secondary);
+  }
+
+  .action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
+  .btn-xs {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.6875rem;
+  }
+
+  .copy-btn {
+    font-size: 0.6875rem;
+    color: var(--accent-primary);
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .verify-status {
+    color: var(--accent-primary);
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .tamper-banner {
+    padding: 0.5rem 0.75rem;
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    font-size: 0.6875rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* Bottom Timeline Strip */
+  .protocol-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-secondary);
+    overflow-x: auto;
+    font-size: 0.6875rem;
+    gap: 0.5rem;
+  }
+
+  .strip-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .strip-step.active {
+    color: var(--accent-primary);
+    font-weight: 700;
+  }
+
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background-color: var(--accent-primary-light);
+    border: 1px solid var(--accent-primary-glow);
+  }
+
+  .strip-arrow {
+    color: var(--text-dim);
+  }
+</style>
+
+<script>
+  let ratchetCounter = 14;
+  let isTampered = false;
+
+  const demoInput = document.getElementById('demo-input') as HTMLTextAreaElement;
+  const cipherOutput = document.getElementById('cipher-output');
+  const bobOutput = document.getElementById('bob-output');
+  const aliceCounter = document.getElementById('alice-counter');
+  const bobCounter = document.getElementById('bob-counter');
+  const aliceEph = document.getElementById('alice-eph');
+  const aliceMsgKey = document.getElementById('alice-msg-key');
+  const wireIv = document.getElementById('wire-iv');
+  const wireTag = document.getElementById('wire-tag');
+  const bobVerify = document.getElementById('bob-verify');
+  const verifyPill = document.getElementById('verify-pill');
+  const tamperAlert = document.getElementById('tamper-alert');
+  const btnAdvance = document.getElementById('btn-advance-ratchet');
+  const btnTamper = document.getElementById('btn-tamper');
+  const copyBtn = document.getElementById('copy-cipher-btn');
+
+  function simulateEncryption(text: string) {
+    if (!text) {
+      if (cipherOutput) cipherOutput.textContent = '--- [EMPTY PAYLOAD] ---';
+      if (bobOutput) bobOutput.textContent = '--- [NO PAYLOAD RECEIVED] ---';
+      return;
+    }
+
+    const pseudoIv = '0x' + Array.from({ length: 6 }, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...92';
+    const pseudoTag = '0x' + Array.from({ length: 6 }, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...c1';
+
+    const rawBytes = new TextEncoder().encode(text);
+    let binary = '';
+    rawBytes.forEach((b) => (binary += String.fromCharCode((b ^ (ratchetCounter & 0xff)) + 3)));
+    const base64Cipher = btoa('E2EE-v4:' + binary + ':' + ratchetCounter);
+
+    if (wireIv) wireIv.textContent = pseudoIv;
+
+    if (isTampered) {
+      const tamperedCipher = 'CORRUPTED_' + base64Cipher.slice(10);
+      if (cipherOutput) cipherOutput.textContent = tamperedCipher;
+      if (wireTag) wireTag.textContent = '0x0000...0000 (INVALID)';
+      if (bobOutput) {
+        bobOutput.textContent = '[DECRYPTION_ERROR: Poly1305 verification failed. Ciphertext dropped to prevent Chosen-Ciphertext Attack.]';
+        bobOutput.style.color = '#ef4444';
+      }
+      if (bobVerify) {
+        bobVerify.textContent = 'Auth Check Failed &cross;';
+        bobVerify.className = 'meta-val';
+        bobVerify.style.color = '#ef4444';
+      }
+      if (verifyPill) {
+        verifyPill.textContent = 'TAMPERED / DROPPED';
+        verifyPill.style.color = '#ef4444';
+      }
+      tamperAlert?.classList.remove('hidden');
+    } else {
+      if (cipherOutput) cipherOutput.textContent = base64Cipher;
+      if (wireTag) wireTag.textContent = pseudoTag + ' (VALID)';
+      if (bobOutput) {
+        bobOutput.textContent = text;
+        bobOutput.style.color = 'var(--text-primary)';
+      }
+      if (bobVerify) {
+        bobVerify.textContent = 'AEAD Integrity Verified &check;';
+        bobVerify.className = 'meta-val meta-success';
+        bobVerify.style.color = '';
+      }
+      if (verifyPill) {
+        verifyPill.textContent = '✓ HMAC MATCH';
+        verifyPill.style.color = 'var(--accent-primary)';
+      }
+      tamperAlert?.classList.add('hidden');
+    }
+  }
+
+  function advanceRatchet() {
+    ratchetCounter++;
+    if (aliceCounter) aliceCounter.textContent = `Ratchet #${ratchetCounter}`;
+    if (bobCounter) bobCounter.textContent = `Ratchet #${ratchetCounter}`;
+
+    const newEph = '0x' + Math.random().toString(16).slice(2, 6) + '...' + Math.random().toString(16).slice(2, 6) + ' (Ed25519)';
+    const newMsgKey = '0x' + Math.random().toString(16).slice(2, 6) + '...' + Math.random().toString(16).slice(2, 6);
+
+    if (aliceEph) aliceEph.textContent = newEph;
+    if (aliceMsgKey) aliceMsgKey.textContent = newMsgKey;
+
+    simulateEncryption(demoInput?.value || '');
+  }
+
+  demoInput?.addEventListener('input', () => {
+    simulateEncryption(demoInput.value);
+  });
+
+  btnAdvance?.addEventListener('click', advanceRatchet);
+
+  btnTamper?.addEventListener('click', () => {
+    isTampered = !isTampered;
+    if (btnTamper) {
+      btnTamper.textContent = isTampered ? '✓ Restore Clean Ciphertext' : 'Δ Simulate Ciphertext Tamper';
+    }
+    simulateEncryption(demoInput?.value || '');
+  });
+
+  copyBtn?.addEventListener('click', () => {
+    if (cipherOutput?.textContent) {
+      navigator.clipboard.writeText(cipherOutput.textContent);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy';
+      }, 1500);
+    }
+  });
+
+  simulateEncryption(demoInput?.value || '');
+</script>

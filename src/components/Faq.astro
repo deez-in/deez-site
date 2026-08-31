@@ -1,0 +1,161 @@
+---
+const faqs = [
+  {
+    q: 'Why should I trust DeezChatz over other messaging apps?',
+    a: 'DeezChatz operates on a strict zero-trust model: we implement the proven Signal Protocol via our pure-Rust libsignal-dezire engine, encrypt local storage with SQLCipher, strip metadata via stateless relays, and keep 100% of our code verifiable and open source.',
+  },
+  {
+    q: 'Can the DeezChatz team or server operators read my messages?',
+    a: 'Mathematically impossible. End-to-end encryption keys are generated locally on your client and never leave your hardware secure enclave. The relay server only routes opaque ciphertexts and cannot decrypt message content, images, or files.',
+  },
+  {
+    q: 'How does account recovery work without phone numbers?',
+    a: 'Your account is backed by an encrypted 24-word BIP-39 cryptographic seed phrase. You can export this seed phrase to backup your keys. Because we practice zero-knowledge, DeezChatz servers do NOT store your seed and cannot reset your account if lost.',
+  },
+  {
+    q: 'How are push notifications handled without leaking metadata to Apple or Google?',
+    a: 'DeezChatz uses blind push tokens. The push payload received by APNs/FCM contains zero message text or sender metadata—it simply delivers a wake-up heartbeat prompting your local app to query the blind relay and decrypt the new packet in client RAM.',
+  },
+  {
+    q: 'Can I run my own private DeezChatz relay node?',
+    a: 'Yes. Our relay crate (`deezchatz-relay`) is fully containerized. You can launch your own federated or isolated private relay cluster using our single-line Docker Compose file.',
+  },
+];
+---
+
+<section id="faq" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">
+        <span class="pulse-indicator"></span>
+        <span>Technical FAQ</span>
+      </div>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-subtitle">
+        Direct answers to technical architecture, cryptographic guarantees, and operational sovereignty questions.
+      </p>
+    </div>
+
+    <div class="faq-list">
+      {faqs.map((faq, index) => (
+        <details class="tech-card faq-item" id={`faq-${index}`}>
+          <summary class="faq-summary font-mono">
+            <span class="faq-index">0{index + 1}.</span>
+            <span class="faq-question">{faq.q}</span>
+            <span class="faq-toggle-icon font-mono">+</span>
+          </summary>
+          <div class="faq-answer">
+            <p>{faq.a}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+
+    <!-- Contact & Connect Box (inspired by dkmondal.in let's connect section) -->
+    <div class="connect-box tech-card">
+      <div class="connect-content">
+        <h3 class="connect-title font-mono">Need Custom Deployment or Security Audit?</h3>
+        <p class="connect-desc">
+          Whether you are an enterprise seeking private high-security relay deployments, an independent security researcher submitting a vulnerability, or just curious about our crypto specs:
+        </p>
+        <div class="connect-actions">
+          <a href="mailto:security@deez.in" class="btn-tech btn-tech-primary font-mono">
+            Contact Cryptography Team &rarr;
+          </a>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn-tech btn-tech-outline font-mono">
+            Security Bug Bounty &nearr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .faq-item {
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .faq-summary {
+    list-style: none;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    user-select: none;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-index {
+    color: var(--accent-primary);
+    font-size: 0.8125rem;
+  }
+
+  .faq-question {
+    flex: 1;
+  }
+
+  .faq-toggle-icon {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    transition: transform 0.25s ease, color 0.25s ease;
+  }
+
+  .faq-item[open] .faq-toggle-icon {
+    transform: rotate(45deg);
+    color: var(--accent-primary);
+  }
+
+  .faq-answer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 1rem;
+  }
+
+  /* Connect Banner */
+  .connect-box {
+    padding: 2.5rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+  }
+
+  .connect-title {
+    font-size: clamp(1.25rem, 2vw, 1.625rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .connect-desc {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    max-width: 44rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .connect-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+</style>

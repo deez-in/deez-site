@@ -1,0 +1,227 @@
+---
+interface EcosystemItem {
+  title: string;
+  desc: string;
+  tags: string[];
+  githubUrl: string;
+}
+
+const coreComponents: EcosystemItem[] = [
+  {
+    title: 'deezchatz-mobile',
+    desc: 'Cross-platform mobile app made using Expo (SDK 57) on top of React Native with SQLCipher encrypted storage.',
+    tags: ['React Native', 'Expo', 'TypeScript', 'SQLCipher', 'Zustand'],
+    githubUrl: 'https://github.com/deez-in/deezchatz-mobile',
+  },
+  {
+    title: 'libsignal-dezire',
+    desc: 'Pure-Rust implementation of the Signal Protocol (X3DH, Double Ratchet, VXEdDSA) for high-assurance E2EE messaging.',
+    tags: ['Rust', 'Crypto', 'X3DH', 'Double Ratchet', 'VXEdDSA'],
+    githubUrl: 'https://github.com/deez-in/libsignal-dezire',
+  },
+  {
+    title: 'deezchatz-api',
+    desc: 'Zero-trust backend engine built with Rust & Axum for identity registration, pre-key bundle serving, and push triggers.',
+    tags: ['Rust', 'Axum', 'DynamoDB', 'Redis', 'RMQTT'],
+    githubUrl: 'https://github.com/deez-in/deezchatz-api',
+  },
+];
+
+const supportingLibraries: EcosystemItem[] = [
+  {
+    title: 'expo-libsignal-dezire',
+    desc: 'Expo React Native native module bridge exposing the libsignal-dezire Rust cryptographic engine via C-FFI.',
+    tags: ['Swift', 'Kotlin', 'Rust FFI', 'Expo'],
+    githubUrl: 'https://github.com/deez-in/expo-libsignal-dezire',
+  },
+  {
+    title: 'expo-google-native-oauth',
+    desc: 'Native Google OAuth integration for Expo using GIDSignIn on iOS and Android Credential Manager.',
+    tags: ['TypeScript', 'Swift', 'Kotlin', 'OAuth'],
+    githubUrl: 'https://github.com/deez-in/expo-google-native-oauth',
+  },
+  {
+    title: 'expo-native-mqtt',
+    desc: 'Native MQTT client bindings for Expo wrapping CocoaMQTT on iOS and HiveMQ on Android.',
+    tags: ['Kotlin', 'Swift', 'HiveMQ', 'CocoaMQTT'],
+    githubUrl: 'https://github.com/deez-in/expo-native-mqtt',
+  },
+  {
+    title: 'deezchatz-infra',
+    desc: 'Ansible playbooks and Infrastructure-as-Code for automating DeezChatz cluster provisioning and maintenance.',
+    tags: ['Ansible', 'Jinja', 'Docker', 'Linux'],
+    githubUrl: 'https://github.com/deez-in/deezchatz-infra',
+  },
+];
+---
+
+<section id="ecosystem" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">
+        <span class="pulse-indicator"></span>
+        <span>Architecture &amp; Repositories</span>
+      </div>
+      <h2 class="section-title">DeezChatz Ecosystem</h2>
+      <p class="section-subtitle">
+        A modular, defense-in-depth architecture designed from the ground up for zero-knowledge privacy, verifiable open source security, and blinding-fast delivery.
+      </p>
+    </div>
+
+    <!-- Core Components -->
+    <div class="ecosystem-group">
+      <h3 class="group-title font-mono">
+        <span class="title-bracket">[</span> Core Components <span class="title-bracket">]</span>
+      </h3>
+      <div class="grid-cards">
+        {coreComponents.map((item) => (
+          <a href={item.githubUrl} target="_blank" rel="noopener noreferrer" class="tech-card group-hover-box ecosystem-card-link">
+            <div class="card-top font-mono">
+              <h4 class="card-name font-mono">{item.title}</h4>
+              <span class="card-github-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+              </span>
+            </div>
+            <p class="card-description">{item.desc}</p>
+            <div class="card-tags">
+              {item.tags.map((tag) => (
+                <span class="badge-tag">{tag}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Supporting Libraries & Infra -->
+    <div class="ecosystem-group">
+      <h3 class="group-title font-mono">
+        <span class="title-bracket">[</span> Supporting Libraries &amp; Infrastructure <span class="title-bracket">]</span>
+      </h3>
+      <div class="grid-cards grid-4">
+        {supportingLibraries.map((item) => (
+          <a href={item.githubUrl} target="_blank" rel="noopener noreferrer" class="tech-card group-hover-box ecosystem-card-link">
+            <div class="card-top font-mono">
+              <h4 class="card-name font-mono">{item.title}</h4>
+              <span class="card-github-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+              </span>
+            </div>
+            <p class="card-description">{item.desc}</p>
+            <div class="card-tags">
+              {item.tags.map((tag) => (
+                <span class="badge-tag">{tag}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ecosystem-group {
+    margin-bottom: 3.5rem;
+  }
+
+  .ecosystem-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .group-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .title-bracket {
+    color: var(--text-dim);
+  }
+
+  .grid-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .grid-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .grid-cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .ecosystem-card-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-name {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    transition: color 0.2s ease;
+  }
+
+  .tech-card:hover .card-name {
+    color: var(--accent-primary);
+  }
+
+  .card-github-icon {
+    color: var(--text-muted);
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .tech-card:hover .card-github-icon {
+    color: var(--accent-primary);
+    transform: translate(2px, -2px);
+  }
+
+  .card-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    flex: 1;
+    min-height: 3.5rem;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: auto;
+  }
+</style>

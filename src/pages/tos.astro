@@ -1,0 +1,480 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const lastUpdated = 'August 31, 2026';
+
+const sections = [
+  { id: 'about-services', title: '1. About Our Services' },
+  { id: 'using-deezchatz', title: '2. Using DeezChatz' },
+  { id: 'rights-licenses', title: '3. Your Rights & License' },
+  { id: 'disclaimers', title: '4. Disclaimers & Warranties' },
+  { id: 'liability', title: '5. Limitation of Liability' },
+  { id: 'availability', title: '6. Availability & Service Termination' },
+  { id: 'disputes', title: '7. Dispute Resolution & Governing Law' },
+  { id: 'general', title: '8. General Terms & Contact' },
+];
+---
+
+<Layout
+  title="Terms of Service | DeezChatz"
+  description="DeezChatz Terms of Service governing the use of the zero-trust end-to-end encrypted messaging application, APIs, and relay services."
+  currentPath="/tos"
+>
+  <div class="legal-page">
+    <div class="container">
+      <!-- Breadcrumb & Header -->
+      <div class="legal-header">
+        <nav class="breadcrumb font-mono" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span class="sep">/</span>
+          <span class="current">Legal</span>
+          <span class="sep">/</span>
+          <span class="current">Terms of Service</span>
+        </nav>
+
+        <div class="legal-badge font-mono">
+          <span class="pulse-indicator"></span>
+          <span>TERMS OF SERVICE // LAST MODIFIED: {lastUpdated}</span>
+        </div>
+
+        <h1 class="legal-title font-mono">Terms of Service</h1>
+        <p class="legal-meta font-mono">
+          <span>Effective Date: {lastUpdated}</span>
+          <span class="meta-sep">&bull;</span>
+          <span>Official Domain: deez.in</span>
+        </p>
+      </div>
+
+      <!-- Main Layout: Sidebar TOC + Content -->
+      <div class="legal-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="legal-sidebar">
+          <div class="toc-sticky">
+            <h3 class="toc-title font-mono">TABLE OF CONTENTS</h3>
+            <ul class="toc-list font-mono">
+              {sections.map((sec) => (
+                <li>
+                  <a href={`#${sec.id}`} class="toc-link">{sec.title}</a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="sidebar-box tech-card font-mono">
+              <div class="box-label">QUICK SUMMARY</div>
+              <p class="box-text">
+                DeezChatz provides end-to-end encrypted messaging. We do not sell your data, we cannot read your chats, and you own your content and cryptographic keys.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Document Body -->
+        <article class="legal-content">
+          <!-- Summary Callout -->
+          <div class="callout-card tech-card">
+            <div class="callout-badge font-mono">AGREEMENT TO TERMS</div>
+            <p class="callout-p">
+              <strong>DeezChatz</strong> ("Deez", "we", "us", or "our") utilizes state-of-the-art security and end-to-end encryption to provide private messaging, pre-key exchange, and offline notification routing to users worldwide. You agree to our Terms of Service ("Terms") by installing, accessing, or using our mobile apps, backend APIs, or website (together, "Services").
+            </p>
+          </div>
+
+          <!-- Section 1: About our services -->
+          <section id="about-services" class="legal-section">
+            <h2 class="section-heading font-mono">1. About Our Services</h2>
+            
+            <p>
+              <strong>Minimum Age.</strong> You must be at least 13 years old to use our Services (or the minimum age required in your country for you to be authorized to use our Services without parental approval). If you are under the required age, you may only use DeezChatz with the supervision and consent of a parent or legal guardian.
+            </p>
+
+            <p>
+              <strong>Account Registration.</strong> To create an account and access our messaging network, you authenticate through our supported identity providers (such as Google Sign-In) to verify identity tokens and publish your public cryptographic pre-key bundles. You agree to provide accurate authentication material and keep your credentials secure.
+            </p>
+
+            <p>
+              <strong>Privacy of User Data.</strong> DeezChatz does not sell, rent, or monetize your personal data or message content in any way — ever. Please review our <a href="/privacy">Privacy Policy</a> to understand how we safeguard your information and minimize technical metadata.
+            </p>
+
+            <p>
+              <strong>Software Updates.</strong> In order to enable new cryptographic enhancements, performance improvements, and security patches, you consent to downloading and installing automatic or prompted updates to our mobile applications and client libraries.
+            </p>
+
+            <p>
+              <strong>Carrier Fees &amp; Data.</strong> You are responsible for all mobile carrier data plans, Internet access charges, and associated taxes incurred while using our Services.
+            </p>
+          </section>
+
+          <!-- Section 2: Using DeezChatz -->
+          <section id="using-deezchatz" class="legal-section">
+            <h2 class="section-heading font-mono">2. Using DeezChatz</h2>
+
+            <p>
+              <strong>Our Terms and Policies.</strong> You must use our Services in accordance with our Terms and posted policies. If we disable or terminate your account for a violation of these Terms, you agree not to create another account without our express permission.
+            </p>
+
+            <p>
+              <strong>Legal and Acceptable Use.</strong> You agree to access and use our Services only for lawful, authorized, and acceptable purposes. You agree you will not use (or assist others in using) our Services in ways that:
+            </p>
+            <ul class="legal-ul">
+              <li>
+                Violate, misappropriate, or infringe the rights of DeezChatz, our users, or others, including privacy, publicity, intellectual property, or other proprietary rights;
+              </li>
+              <li>
+                Involve transmitting illegal or unlawful material, including Child Sexual Abuse Material (CSAM), non-consensual intimate imagery, or direct incitement to violent crimes;
+              </li>
+              <li>
+                Involve sending unsolicited bulk messaging, automated spamming, or fraudulent phishing campaigns;
+              </li>
+              <li>
+                Impersonate another individual or misrepresent your affiliation with an organization in a deceptive or fraudulent manner.
+              </li>
+            </ul>
+
+            <p>
+              <strong>Protection of Services &amp; Infrastructure.</strong> You must not (or attempt to, or assist others to) access, use, copy, adapt, modify, prepare derivative works based upon, distribute, license, sublicense, transfer, display, perform, or otherwise exploit our Services in impermissible or unauthorized manners. You must not:
+            </p>
+            <ul class="legal-ul">
+              <li>
+                Gain or attempt to gain unauthorized access to our APIs, Redis caches, DynamoDB registries, or RMQTT message brokers;
+              </li>
+              <li>
+                Conduct Denial of Service (DoS/DDoS) attacks, flood socket connections, or compromise the stability and integrity of our routing relays;
+              </li>
+              <li>
+                Harvest, scrape, or extract user identifiers or public keys through unauthorized automated means;
+              </li>
+              <li>
+                Transmit malicious code, trojans, worms, viruses, or software vulnerabilities designed to exploit client applications or servers.
+              </li>
+            </ul>
+
+            <p>
+              <strong>Keeping Your Account &amp; Keys Secure.</strong> DeezChatz embraces zero-trust security by design. Private encryption keys are generated locally and stored exclusively in your device's secure hardware (such as Secure Enclave or StrongBox Keystore) and encrypted database (SQLCipher). We do not possess your private keys and cannot decrypt your communications. You are solely responsible for securing your physical device, your device PIN/biometrics, and your local backups.
+            </p>
+
+            <p>
+              <strong>No Access to Emergency Services.</strong> DeezChatz is an Internet messaging service and does not provide connections to emergency service providers (such as 911, 112, police, fire, or hospitals). You must ensure you have alternative mobile or fixed-line telecommunications channels to reach emergency response services.
+            </p>
+
+            <p>
+              <strong>Third-Party Services.</strong> When you interact with third-party services integrated with or used by our app (such as Google Sign-In for OAuth authentication or Apple APNs / Google FCM for background notification wake-ups), their respective terms and privacy policies govern your use of those specific services.
+            </p>
+          </section>
+
+          <!-- Section 3: Your Rights and License with DeezChatz -->
+          <section id="rights-licenses" class="legal-section">
+            <h2 class="section-heading font-mono">3. Your Rights &amp; License</h2>
+
+            <p>
+              <strong>Your Rights.</strong> You retain ownership of the rights to the content you transmit through DeezChatz. You are responsible for ensuring that you have the right to share the information you send.
+            </p>
+
+            <p>
+              <strong>DeezChatz Rights.</strong> We own all copyrights, trademarks, domains, logos, trade dress, and brand assets associated with the DeezChatz project. Our client software and backend services are released under permissive open source licenses (such as MIT and AGPL-3.0). You may not use our proprietary brand trademarks or logos without our prior written consent, except as permitted under applicable trademark law or open source guidelines.
+            </p>
+
+            <p>
+              <strong>License to You.</strong> We grant you a personal, limited, revocable, non-exclusive, and non-transferable license to use our Services in accordance with these Terms and the applicable open source licenses governing our respective repositories.
+            </p>
+          </section>
+
+          <!-- Section 4: Disclaimers -->
+          <section id="disclaimers" class="legal-section">
+            <h2 class="section-heading font-mono">4. Disclaimers &amp; Warranties</h2>
+            <div class="disclaimer-box font-mono">
+              YOU USE OUR SERVICES AT YOUR OWN RISK AND SUBJECT TO THE FOLLOWING DISCLAIMERS. WE PROVIDE OUR SERVICES ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, AND FREEDOM FROM COMPUTER VIRUSES OR OTHER HARMFUL CODE.
+            </div>
+            <p>
+              We do not warrant that any information provided by us is complete or error-free, that our Services will operate without interruption, delays, or imperfections, or that our Services will meet all of your specific operational requirements. We do not control and are not responsible for how or when our users use our Services or the features and interfaces our Services provide.
+            </p>
+          </section>
+
+          <!-- Section 5: Limitation of Liability -->
+          <section id="liability" class="legal-section">
+            <h2 class="section-heading font-mono">5. Limitation of Liability</h2>
+            <div class="disclaimer-box font-mono">
+              TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE DEEZCHATZ PROJECT, ITS MAINTAINERS, CONTRIBUTORS, OPERATORS, AND AFFILIATES WILL NOT BE LIABLE TO YOU FOR ANY LOST PROFITS OR CONSEQUENTIAL, SPECIAL, PUNITIVE, INDIRECT, OR INCIDENTAL DAMAGES ARISING OUT OF OR IN CONNECTION WITH OUR TERMS, OUR PLATFORM, OR OUR SERVICES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+            </div>
+            <p>
+              Our aggregate liability relating to, arising out of, or in any way in connection with our Terms or Services will not exceed the greater of one hundred United States dollars ($100) or the amount you have paid us in the past twelve months to use our Services.
+            </p>
+          </section>
+
+          <!-- Section 6: Availability & Ending Terms -->
+          <section id="availability" class="legal-section">
+            <h2 class="section-heading font-mono">6. Availability &amp; Service Termination</h2>
+            <p>
+              <strong>Service Availability.</strong> Our Services may be subject to maintenance, upgrades, network disruptions, or hardware maintenance. We may modify or discontinue certain features, platforms, or server endpoints at any time.
+            </p>
+
+            <p>
+              <strong>Ending These Terms.</strong> You may terminate these Terms at any time by deleting the DeezChatz application from your devices, clearing your local cryptographic key stores, and discontinuing all use of our Services. We may modify, suspend, or terminate your access to or use of our Services at any time if you violate these Terms or create legal risk or harm for DeezChatz or other users.
+            </p>
+          </section>
+
+          <!-- Section 7: Disputes -->
+          <section id="disputes" class="legal-section">
+            <h2 class="section-heading font-mono">7. Dispute Resolution &amp; Governing Law</h2>
+            <p>
+              You agree that any dispute, claim, or controversy arising out of or relating to these Terms or our Services shall be resolved in accordance with applicable laws, without regard to conflict of law principles. If a court of competent jurisdiction finds any provision of these Terms invalid or unenforceable, that provision will be enforced to the maximum extent permissible, and the remaining provisions will remain in full force and effect.
+            </p>
+          </section>
+
+          <!-- Section 8: General & Contact -->
+          <section id="general" class="legal-section">
+            <h2 class="section-heading font-mono">8. General Terms &amp; Contact</h2>
+            <p>
+              We may update these Terms from time to time. When we make updates, we will revise the "Last Modified" date at the top of this page. Your continued use of our Services confirms your acceptance of our updated Terms.
+            </p>
+
+            <p>
+              If you have questions regarding our Terms of Service or need legal assistance, please contact us at:
+            </p>
+            <div class="contact-card font-mono">
+              <div><strong>Legal Team:</strong> legal@deez.in</div>
+              <div><strong>Privacy Team:</strong> privacy@deez.in</div>
+              <div><strong>Security Vulnerability Reporting:</strong> security@deez.in</div>
+              <div><strong>Official Site:</strong> <a href="https://deez.in">https://deez.in</a></div>
+            </div>
+          </section>
+        </article>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .legal-page {
+    padding-block: 3.5rem 6rem;
+  }
+
+  .legal-header {
+    margin-bottom: 3.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .breadcrumb a {
+    color: var(--accent-primary);
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .sep {
+    color: var(--text-dim);
+  }
+
+  .legal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.625rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+  }
+
+  .legal-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .legal-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+
+  /* Two-column layout */
+  .legal-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  @media (min-width: 1024px) {
+    .legal-layout {
+      grid-template-columns: 280px 1fr;
+      gap: 4rem;
+    }
+  }
+
+  /* Sticky TOC */
+  .toc-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .toc-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .toc-link {
+    color: var(--text-secondary);
+    display: block;
+    padding-block: 0.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .toc-link:hover {
+    color: var(--accent-primary);
+    transform: translateX(3px);
+  }
+
+  .sidebar-box {
+    padding: 1.25rem;
+    background-color: var(--bg-card);
+    font-size: 0.75rem;
+  }
+
+  .box-label {
+    color: var(--accent-primary);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .box-text {
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Content */
+  .legal-content {
+    max-width: 52rem;
+  }
+
+  .callout-card {
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    background-color: var(--bg-card);
+    border-left: 3px solid var(--accent-primary);
+  }
+
+  .callout-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .callout-p {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .legal-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .legal-section:last-child {
+    border-bottom: none;
+  }
+
+  .section-heading {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+    scroll-margin-top: calc(var(--header-height) + 2rem);
+  }
+
+  .legal-section p {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .legal-ul {
+    list-style: none;
+    margin-block: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding-left: 0.5rem;
+  }
+
+  .legal-ul li {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    position: relative;
+    padding-left: 1.25rem;
+  }
+
+  .legal-ul li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent-primary);
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1;
+  }
+
+  .disclaimer-box {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 1.25rem;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1.25rem;
+  }
+
+  .contact-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 1.25rem;
+    font-size: 0.8125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+  }
+
+  .contact-card a {
+    color: var(--accent-primary);
+  }
+</style>

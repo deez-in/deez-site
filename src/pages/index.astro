@@ -1,17 +1,270 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import CryptoGraph from '../components/CryptoGraph.astro';
+import LiveEncryptionDemo from '../components/LiveEncryptionDemo.astro';
+import Ecosystem from '../components/Ecosystem.astro';
+import SecurityFeatures from '../components/SecurityFeatures.astro';
+import OpenSource from '../components/OpenSource.astro';
+import Faq from '../components/Faq.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+  title="DeezChatz | Zero-Knowledge End-to-End Encrypted Messaging"
+  description="DeezChatz is a high-performance, zero-knowledge, end-to-end encrypted messaging platform powered by the Signal Double Ratchet protocol, rust-native core, and metadata-shielding relays."
+  currentPath="/"
+>
+  <!-- Hero Section with Distinct Foreground / Background Layering -->
+  <section id="hero" class="hero-section">
+    <!-- Deep Layer: Background Crypto Mesh Canvas -->
+    <CryptoGraph />
+
+    <!-- Foreground Layer: Content with High-Contrast Depth -->
+    <div class="container hero-content-container">
+      <div class="hero-content">
+        <!-- Cryptographic Status Badge -->
+        <div class="hero-badge font-mono">
+          <span class="pulse-indicator"></span>
+          <span class="badge-text">SIGNAL PROTOCOL // ZERO-KNOWLEDGE MESH</span>
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="hero-title font-mono">
+          Privacy by Cryptography,<br />
+          <span class="text-accent">Not by Policy.</span>
+        </h1>
+
+        <!-- Philosophy Quote with Foreground Card Elevation -->
+        <div class="hero-quote-card tech-card">
+          <q class="hero-quote-text">
+            Ain't nobody reading Deez Chatz. Storing useless logs costs real money and burns trees;
+            <br />
+            <span class="quote-sub font-mono">Ain't nobody paying cloud bills to host your 3 AM chatzzz.</span>
+          </q>
+        </div>
+
+        <!-- Description Body -->
+        <p class="hero-description">
+          <strong>DeezChatz</strong> is a zero-trust, end-to-end encrypted messaging ecosystem built with Rust, Expo, and the Signal Protocol. Powered by <code>libsignal-dezire</code>, SQLCipher storage, and stateless RMQTT push relays.
+        </p>
+
+        <!-- CTA Action Buttons -->
+        <div class="hero-actions font-mono">
+          <a href="https://github.com/deez-in/deezchatz-mobile" target="_blank" rel="noopener noreferrer" class="btn-tech btn-tech-primary hero-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            <span>Get Mobile App</span>
+          </a>
+
+          <button id="explore-graph-btn" class="btn-tech btn-tech-outline hero-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M3 12h18"></path>
+            </svg>
+            <span>Explore Graph</span>
+          </button>
+
+          <a href="#demo" class="btn-tech btn-tech-outline hero-btn">
+            <span>Live Demo &darr;</span>
+          </a>
+        </div>
+
+        <!-- Key Metrics Foreground Strip -->
+        <div class="metrics-strip tech-card font-mono">
+          <div class="metric-item">
+            <span class="metric-num">0</span>
+            <span class="metric-label">Plaintext Stored</span>
+          </div>
+          <div class="metric-divider">/</div>
+          <div class="metric-item">
+            <span class="metric-num">100%</span>
+            <span class="metric-label">Metadata Shielded</span>
+          </div>
+          <div class="metric-divider">/</div>
+          <div class="metric-item">
+            <span class="metric-num">Signal</span>
+            <span class="metric-label">Ratchet E2EE</span>
+          </div>
+          <div class="metric-divider">/</div>
+          <div class="metric-item">
+            <span class="metric-num">MIT</span>
+            <span class="metric-label">Open Source</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Ratchet Simulation Section -->
+  <LiveEncryptionDemo />
+
+  <!-- Ecosystem / Architecture Crates Section -->
+  <Ecosystem />
+
+  <!-- Security Features / Bento Grid Section -->
+  <SecurityFeatures />
+
+  <!-- Open Source / GitHub Section -->
+  <OpenSource />
+
+  <!-- Technical FAQ & Contact Section -->
+  <Faq />
+</Layout>
+
+<style>
+  .hero-section {
+    position: relative;
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding-block: 4.5rem 5.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-section {
+      padding-block: 6rem 7rem;
+    }
+  }
+
+  .hero-content-container {
+    position: relative;
+    z-index: 10;
+  }
+
+  .hero-content {
+    max-width: 46rem;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hero-title {
+    font-size: clamp(2.25rem, 5.2vw, 4.25rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+  }
+
+  .text-accent {
+    color: var(--accent-primary);
+    background: linear-gradient(135deg, var(--accent-primary) 0%, #fbbf24 60%, var(--accent-cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-quote-card {
+    padding: 1.125rem 1.35rem;
+    margin-bottom: 1.5rem;
+    border-left: 3px solid var(--accent-primary);
+    background-color: var(--bg-card);
+    max-width: 40rem;
+  }
+
+  .hero-quote-text {
+    font-size: 1.0625rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .quote-sub {
+    color: var(--accent-primary);
+    font-weight: 700;
+    font-style: normal;
+    display: inline-block;
+    margin-top: 0.35rem;
+    font-size: 0.9375rem;
+  }
+
+  .hero-description {
+    font-size: 1.0625rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 2.25rem;
+    max-width: 42rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    margin-bottom: 3.25rem;
+    position: relative;
+    z-index: 20;
+  }
+
+  .hero-btn {
+    padding: 0.875rem 1.625rem;
+    font-size: 0.875rem;
+  }
+
+  .metrics-strip {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 1.75rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+  }
+
+  @media (max-width: 640px) {
+    .metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      width: 100%;
+    }
+    .metric-divider {
+      display: none;
+    }
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .metric-num {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  .metric-label {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .metric-divider {
+    color: var(--border-color);
+    font-weight: 300;
+  }
+</style>
+
+<script>
+  const exploreBtn = document.getElementById('explore-graph-btn');
+  exploreBtn?.addEventListener('click', () => {
+    if (typeof (window as any).toggleCryptoGraph === 'function') {
+      (window as any).toggleCryptoGraph();
+    }
+  });
+</script>

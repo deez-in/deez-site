@@ -1,0 +1,183 @@
+---
+---
+
+<section id="features" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">
+        <span class="pulse-indicator"></span>
+        <span>Cryptographic Guarantees</span>
+      </div>
+      <h2 class="section-title">Engineered for Absolute Paranoia</h2>
+      <p class="section-subtitle">
+        We don't ask you to trust our word or our servers. Our system is mathematically incapable of reading your messages, mapping your social graph, or logging your metadata.
+      </p>
+    </div>
+
+    <div class="bento-grid">
+      <!-- Bento Card 1: Double Ratchet & PFS (Large) -->
+      <div class="tech-card bento-card bento-wide">
+        <div class="card-icon font-mono">[ 01 ]</div>
+        <h3 class="bento-title font-mono">Double Ratchet &amp; Perfect Forward Secrecy</h3>
+        <p class="bento-desc">
+          Every individual message is encrypted with a unique, single-use ephemeral key derived via Diffie-Hellman ratchet chains. Even if an attacker compromises a client key in the future, past and future conversations remain mathematically unreadable.
+        </p>
+        <div class="code-snippet font-mono">
+          <div class="snippet-line"><span class="c-fn">KDF_CK</span>(CK, DH(EPK_Alice, EPK_Bob)) &rarr; (CK_next, MK)</div>
+          <div class="snippet-line"><span class="c-fn">AES_GCM_Encrypt</span>(MK, Nonce, Plaintext) &rarr; Ciphertext</div>
+        </div>
+      </div>
+
+      <!-- Bento Card 2: Sealed Sender -->
+      <div class="tech-card bento-card">
+        <div class="card-icon font-mono">[ 02 ]</div>
+        <h3 class="bento-title font-mono">Sealed Sender Envelope</h3>
+        <p class="bento-desc">
+          The relay server only sees the delivery destination token. The sender's cryptographic identity is sealed inside the encrypted payload, preventing traffic analysis and social graph profiling.
+        </p>
+        <div class="bento-badge font-mono">ZERO METADATA LEAK</div>
+      </div>
+
+      <!-- Bento Card 3: SQLCipher Encrypted Storage -->
+      <div class="tech-card bento-card">
+        <div class="card-icon font-mono">[ 03 ]</div>
+        <h3 class="bento-title font-mono">SQLCipher Encrypted Storage</h3>
+        <p class="bento-desc">
+          Local message databases, chat histories, and ratchet state caches are encrypted at rest with 256-bit AES via SQLCipher, backed by hardware-isolated device keystores.
+        </p>
+        <div class="bento-badge font-mono">SQLCIPHER + HARDWARE ENCLAVE</div>
+      </div>
+
+      <!-- Bento Card 4: RAM-Only Blind Relays -->
+      <div class="tech-card bento-card">
+        <div class="card-icon font-mono">[ 04 ]</div>
+        <h3 class="bento-title font-mono">RAM-Only Stateless Relays</h3>
+        <p class="bento-desc">
+          DeezChatz relay nodes run on stateless, diskless memory containers. Once an encrypted packet is acknowledged by the recipient, it is instantly purged from volatile memory forever.
+        </p>
+        <div class="bento-badge font-mono">DISKLESS CLUSTERS</div>
+      </div>
+
+      <!-- Bento Card 5: Phone-less Zero-Knowledge Identity -->
+      <div class="tech-card bento-card">
+        <div class="card-icon font-mono">[ 05 ]</div>
+        <h3 class="bento-title font-mono">No Phone Numbers Required</h3>
+        <p class="bento-desc">
+          Never link your real-world identity, SIM card, or contacts. Accounts are purely based on self-generated Ed25519 public key pairs with zero-knowledge cryptographic authentication.
+        </p>
+        <div class="bento-badge font-mono">ZERO SIM / SMS LINK</div>
+      </div>
+
+      <!-- Bento Card 6: Hardware Enclave & Self-Destruct -->
+      <div class="tech-card bento-card bento-wide">
+        <div class="card-icon font-mono">[ 06 ]</div>
+        <h3 class="bento-title font-mono">Hardware Security Modules &amp; Ephemeral Burn</h3>
+        <p class="bento-desc">
+          Private keys never leave your device's hardware chip (Apple Secure Enclave, Android StrongBox, or YubiKey). Optional ephemeral message timers overwrite memory buffers with cryptographic random noise upon expiration.
+        </p>
+        <div class="secure-chips font-mono">
+          <span class="chip-item">Apple Secure Enclave</span>
+          <span class="chip-item">Android StrongBox</span>
+          <span class="chip-item">FIDO2 / YubiKey</span>
+          <span class="chip-item">DOD 5220.22-M Wipe</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bento-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .bento-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .bento-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .bento-wide {
+      grid-column: span 2;
+    }
+  }
+
+  .bento-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem;
+  }
+
+  .card-icon {
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .bento-title {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .bento-desc {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .bento-badge {
+    align-self: flex-start;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--accent-primary);
+    border-radius: var(--radius-sm);
+  }
+
+  .code-snippet {
+    background-color: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--terminal-text);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    overflow-x: auto;
+  }
+
+  .c-fn {
+    color: var(--accent-cyan);
+    font-weight: 600;
+  }
+
+  .secure-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chip-item {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+  }
+</style>

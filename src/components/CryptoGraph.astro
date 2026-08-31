@@ -1,0 +1,583 @@
+---
+---
+
+<div id="crypto-graph-container" class="crypto-graph-wrapper">
+  <canvas id="crypto-canvas" aria-label="Interactive Cryptographic Mesh Network Visualizer"></canvas>
+
+  <!-- Left fade mask to prevent canvas lines from distracting foreground text -->
+  <div class="graph-fade-mask" aria-hidden="true"></div>
+
+  <!-- HUD Status Info -->
+  <div class="graph-hud">
+    <div class="hud-status font-mono">
+      <span class="pulse-indicator"></span>
+      <span id="hud-text">E2EE MESH: AUTONOMOUS ROUTING</span>
+    </div>
+    <div class="hud-stats font-mono">
+      <span>RELAY NODES: 24</span>
+      <span class="hud-sep">|</span>
+      <span>ZERO METADATA LEAK</span>
+    </div>
+  </div>
+
+  <button id="close-graph-btn" class="close-graph-button font-mono" title="Exit Interactive Mode" aria-label="Exit Interactive Mode">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+    <span>Lock View</span>
+  </button>
+</div>
+
+<style>
+  .crypto-graph-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.5s ease, background 0.5s ease;
+  }
+
+  .graph-fade-mask {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to right,
+      var(--bg-primary) 0%,
+      rgba(8, 9, 13, 0.85) 30%,
+      transparent 70%
+    );
+    z-index: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  :global(html:not(.dark)) .graph-fade-mask {
+    background: linear-gradient(
+      to right,
+      var(--bg-primary) 0%,
+      rgba(248, 249, 250, 0.88) 30%,
+      transparent 70%
+    );
+  }
+
+  .crypto-graph-wrapper.interactive-mode .graph-fade-mask {
+    opacity: 0;
+  }
+
+  .crypto-graph-wrapper.interactive-mode {
+    pointer-events: auto;
+    z-index: 30;
+    background: radial-gradient(circle at center, rgba(8, 9, 13, 0.92) 0%, rgba(8, 9, 13, 0.98) 100%);
+  }
+
+  :global(html:not(.dark)) .crypto-graph-wrapper.interactive-mode {
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.92) 0%, rgba(240, 242, 245, 0.98) 100%);
+  }
+
+  #crypto-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    z-index: 0;
+  }
+
+  .graph-hud {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 0.625rem 1rem;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    opacity: 0.9;
+    pointer-events: none;
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    z-index: 2;
+  }
+
+  @media (max-width: 768px) {
+    .graph-hud {
+      display: none;
+    }
+  }
+
+  .hud-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent-primary);
+    font-weight: 700;
+  }
+
+  .hud-stats {
+    color: var(--text-muted);
+  }
+
+  .hud-sep {
+    margin-inline: 0.35rem;
+    opacity: 0.4;
+  }
+
+  .close-graph-button {
+    position: absolute;
+    top: calc(var(--header-height) + 1.5rem);
+    right: 2rem;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.1rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    z-index: 40;
+  }
+
+  .close-graph-button:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: translateY(-1px);
+  }
+
+  .crypto-graph-wrapper.interactive-mode .close-graph-button {
+    display: flex;
+  }
+</style>
+
+<script>
+  // Cryptographic Mesh Canvas Simulation with Yellow Theme
+  class CryptoMeshVisualizer {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private container: HTMLElement;
+    private closeBtn: HTMLElement | null;
+    private nodes: Array<{
+      id: string;
+      label: string;
+      sub: string;
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      color: string;
+      isHeroNode?: boolean;
+    }> = [];
+    private packets: Array<{
+      fromIdx: number;
+      toIdx: number;
+      progress: number;
+      speed: number;
+      color: string;
+      size: number;
+    }> = [];
+    private width = 0;
+    private height = 0;
+    private dpr = 1;
+    private animId: number | null = null;
+    private mouse = { x: -1000, y: -1000, isDown: false, draggedNode: -1 };
+    private isInteractive = false;
+
+    constructor() {
+      this.canvas = document.getElementById('crypto-canvas') as HTMLCanvasElement;
+      this.container = document.getElementById('crypto-graph-container') as HTMLElement;
+      this.closeBtn = document.getElementById('close-graph-btn');
+      this.ctx = this.canvas?.getContext('2d') as CanvasRenderingContext2D;
+
+      if (!this.canvas || !this.ctx || !this.container) return;
+
+      this.initNodes();
+      this.resize();
+      this.bindEvents();
+      this.animate();
+    }
+
+    private initNodes() {
+      // Yellow / Amber / Gold / Cyan Palette
+      const nodeDefinitions = [
+        { id: 'alice', label: 'Peer A (Alice)', sub: 'Ed25519 / Ratchet #42', color: '#facc15', r: 24, isHero: true },
+        { id: 'bob', label: 'Peer B (Bob)', sub: 'Curve25519 / Ratchet #42', color: '#facc15', r: 24, isHero: true },
+        { id: 'x3dh', label: 'X3DH Key Exchange', sub: 'Triple Diffie-Hellman', color: '#38bdf8', r: 18 },
+        { id: 'ratchet', label: 'Double Ratchet Engine', sub: 'KDF Chain + Forward Secrecy', color: '#eab308', r: 20 },
+        { id: 'relay1', label: 'Blind Relay Alpha', sub: 'Zero-Knowledge Mixnet', color: '#fbbf24', r: 16 },
+        { id: 'relay2', label: 'Blind Relay Beta', sub: 'Encrypted Onion Route', color: '#fbbf24', r: 16 },
+        { id: 'relay3', label: 'Blind Relay Gamma', sub: 'RAM-Only / Zero Logs', color: '#fbbf24', r: 16 },
+        { id: 'sealed', label: 'Sealed Sender Envelope', sub: 'Metadata Stripped', color: '#f59e0b', r: 17 },
+        { id: 'x25519', label: 'Curve25519 / Ed25519', sub: 'High-Assurance ECC', color: '#38bdf8', r: 17 },
+        { id: 'enclave', label: 'Secure Enclave HSM', sub: 'Hardware Key Isolation', color: '#ca8a04', r: 16 },
+        { id: 'zkauth', label: 'ZK-Proof Identity', sub: 'Zero Phone Number Leak', color: '#fde047', r: 16 }
+      ];
+
+      this.nodes = nodeDefinitions.map((d) => ({
+        id: d.id,
+        label: d.label,
+        sub: d.sub,
+        x: 0,
+        y: 0,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        radius: d.r,
+        color: d.color,
+        isHeroNode: d.isHero
+      }));
+    }
+
+    private resize = () => {
+      if (!this.container || !this.canvas) return;
+      this.width = this.container.clientWidth;
+      this.height = this.container.clientHeight;
+      this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      this.canvas.width = this.width * this.dpr;
+      this.canvas.height = this.height * this.dpr;
+      this.ctx.scale(this.dpr, this.dpr);
+
+      // Distribute nodes: keep them on the right side on desktop so they don't overlap left text!
+      const isWide = this.width > 900;
+      const centerX = isWide ? this.width * 0.72 : this.width * 0.5;
+      const centerY = this.height * 0.5;
+
+      this.nodes.forEach((node, i) => {
+        if (node.x === 0 && node.y === 0) {
+          const angle = (i / this.nodes.length) * Math.PI * 2;
+          const radiusScale = isWide ? 0.3 : 0.38;
+          const dist = Math.min(this.width, this.height) * (0.18 + (i % 3) * 0.08);
+          node.x = centerX + Math.cos(angle) * dist;
+          node.y = centerY + Math.sin(angle) * dist;
+        }
+      });
+    };
+
+    private spawnPacket() {
+      if (this.packets.length > 18) return;
+      const fromIdx = Math.floor(Math.random() * this.nodes.length);
+      let toIdx = Math.floor(Math.random() * this.nodes.length);
+      while (toIdx === fromIdx) {
+        toIdx = Math.floor(Math.random() * this.nodes.length);
+      }
+
+      this.packets.push({
+        fromIdx,
+        toIdx,
+        progress: 0,
+        speed: 0.005 + Math.random() * 0.007,
+        color: this.nodes[fromIdx].color,
+        size: 3 + Math.random() * 2
+      });
+    }
+
+    public toggleInteractivity = () => {
+      this.isInteractive = !this.isInteractive;
+      if (this.isInteractive) {
+        this.container.classList.add('interactive-mode');
+        document.body.style.overflow = 'hidden';
+      } else {
+        this.container.classList.remove('interactive-mode');
+        document.body.style.overflow = '';
+      }
+    };
+
+    private bindEvents() {
+      window.addEventListener('resize', this.resize);
+
+      this.closeBtn?.addEventListener('click', () => {
+        if (this.isInteractive) this.toggleInteractivity();
+      });
+
+      const getPos = (e: MouseEvent | TouchEvent) => {
+        const rect = this.canvas.getBoundingClientRect();
+        if ('touches' in e && e.touches.length > 0) {
+          return {
+            x: e.touches[0].clientX - rect.left,
+            y: e.touches[0].clientY - rect.top
+          };
+        }
+        const me = e as MouseEvent;
+        return {
+          x: me.clientX - rect.left,
+          y: me.clientY - rect.top
+        };
+      };
+
+      const handleDown = (e: MouseEvent | TouchEvent) => {
+        const pos = getPos(e);
+        this.mouse.x = pos.x;
+        this.mouse.y = pos.y;
+        this.mouse.isDown = true;
+
+        for (let i = 0; i < this.nodes.length; i++) {
+          const node = this.nodes[i];
+          const dist = Math.hypot(node.x - pos.x, node.y - pos.y);
+          if (dist < node.radius + 15) {
+            this.mouse.draggedNode = i;
+            break;
+          }
+        }
+      };
+
+      const handleMove = (e: MouseEvent | TouchEvent) => {
+        const pos = getPos(e);
+        this.mouse.x = pos.x;
+        this.mouse.y = pos.y;
+
+        if (this.mouse.isDown && this.mouse.draggedNode !== -1) {
+          const node = this.nodes[this.mouse.draggedNode];
+          node.x = pos.x;
+          node.y = pos.y;
+          node.vx = 0;
+          node.vy = 0;
+        }
+      };
+
+      const handleUp = () => {
+        this.mouse.isDown = false;
+        this.mouse.draggedNode = -1;
+      };
+
+      this.canvas.addEventListener('mousedown', handleDown);
+      window.addEventListener('mousemove', handleMove);
+      window.addEventListener('mouseup', handleUp);
+
+      this.canvas.addEventListener('touchstart', handleDown, { passive: true });
+      window.addEventListener('touchmove', handleMove, { passive: true });
+      window.addEventListener('touchend', handleUp);
+
+      (window as any).toggleCryptoGraph = this.toggleInteractivity;
+    }
+
+    private update() {
+      if (Math.random() < 0.08) {
+        this.spawnPacket();
+      }
+
+      // Physics boundaries:
+      // When not in interactive mode on wide screens, constrain nodes to right side so they never overlap hero text
+      const isWide = this.width > 900;
+      const minX = (!this.isInteractive && isWide) ? (this.width * 0.48) : 50;
+      const maxX = this.width - 50;
+      const minY = 70;
+      const maxY = this.height - 50;
+
+      for (let i = 0; i < this.nodes.length; i++) {
+        const node = this.nodes[i];
+
+        if (this.mouse.draggedNode !== i) {
+          node.x += node.vx;
+          node.y += node.vy;
+
+          if (node.x < minX) { node.x = minX; node.vx = Math.abs(node.vx); }
+          if (node.x > maxX) { node.x = maxX; node.vx = -Math.abs(node.vx); }
+          if (node.y < minY) { node.y = minY; node.vy = Math.abs(node.vy); }
+          if (node.y > maxY) { node.y = maxY; node.vy = -Math.abs(node.vy); }
+
+          for (let j = i + 1; j < this.nodes.length; j++) {
+            const other = this.nodes[j];
+            const dx = other.x - node.x;
+            const dy = other.y - node.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            const minDist = (node.radius + other.radius) * 2.5;
+
+            if (dist < minDist) {
+              const force = (minDist - dist) / minDist * 0.025;
+              node.vx -= (dx / dist) * force;
+              node.vy -= (dy / dist) * force;
+              other.vx += (dx / dist) * force;
+              other.vy += (dy / dist) * force;
+            }
+          }
+
+          node.vx *= 0.96;
+          node.vy *= 0.96;
+        }
+      }
+
+      for (let p = this.packets.length - 1; p >= 0; p--) {
+        const pkt = this.packets[p];
+        pkt.progress += pkt.speed;
+        if (pkt.progress >= 1) {
+          this.packets.splice(p, 1);
+        }
+      }
+    }
+
+    private draw() {
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      const isDark = document.documentElement.classList.contains('dark');
+      const activeLineColor = isDark ? 'rgba(250, 204, 21, 0.45)' : 'rgba(202, 138, 4, 0.45)';
+
+      // Detect hovered node
+      let hoveredNodeIdx = -1;
+      for (let i = 0; i < this.nodes.length; i++) {
+        const node = this.nodes[i];
+        const distToMouse = Math.hypot(node.x - this.mouse.x, node.y - this.mouse.y);
+        if (distToMouse < node.radius + 12) {
+          hoveredNodeIdx = i;
+          break;
+        }
+      }
+
+      const activeNodeIdx = this.mouse.draggedNode !== -1 ? this.mouse.draggedNode : hoveredNodeIdx;
+
+      // Update canvas cursor
+      if (this.canvas) {
+        if (this.mouse.draggedNode !== -1) {
+          this.canvas.style.cursor = 'grabbing';
+        } else if (hoveredNodeIdx !== -1) {
+          this.canvas.style.cursor = 'grab';
+        } else {
+          this.canvas.style.cursor = 'default';
+        }
+      }
+
+      // 1. Draw Edges
+      for (let i = 0; i < this.nodes.length; i++) {
+        for (let j = i + 1; j < this.nodes.length; j++) {
+          const n1 = this.nodes[i];
+          const n2 = this.nodes[j];
+          const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+          const maxConnectionDist = Math.min(this.width, this.height) * 0.42;
+
+          if (dist < maxConnectionDist) {
+            const alpha = 1 - (dist / maxConnectionDist);
+            const isConnectedToActive = (i === activeNodeIdx || j === activeNodeIdx);
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(n1.x, n1.y);
+            this.ctx.lineTo(n2.x, n2.y);
+
+            if (isConnectedToActive) {
+              this.ctx.strokeStyle = activeLineColor;
+              this.ctx.lineWidth = 2;
+            } else if (n1.isHeroNode && n2.isHeroNode) {
+              this.ctx.strokeStyle = isDark ? 'rgba(250, 204, 21, 0.22)' : 'rgba(202, 138, 4, 0.22)';
+              this.ctx.lineWidth = 1.5;
+            } else {
+              this.ctx.strokeStyle = isDark ? `rgba(255, 255, 255, ${0.05 * alpha})` : `rgba(0, 0, 0, ${0.06 * alpha})`;
+              this.ctx.lineWidth = 1;
+            }
+
+            this.ctx.stroke();
+          }
+        }
+      }
+
+      // 2. Draw Flying Encrypted Packets
+      for (const pkt of this.packets) {
+        const from = this.nodes[pkt.fromIdx];
+        const to = this.nodes[pkt.toIdx];
+        if (!from || !to) continue;
+
+        const px = from.x + (to.x - from.x) * pkt.progress;
+        const py = from.y + (to.y - from.y) * pkt.progress;
+
+        // Packet glow
+        this.ctx.beginPath();
+        this.ctx.arc(px, py, pkt.size + 3, 0, Math.PI * 2);
+        this.ctx.fillStyle = isDark ? 'rgba(250, 204, 21, 0.35)' : 'rgba(202, 138, 4, 0.25)';
+        this.ctx.fill();
+
+        // Packet core
+        this.ctx.beginPath();
+        this.ctx.arc(px, py, pkt.size, 0, Math.PI * 2);
+        this.ctx.fillStyle = pkt.color;
+        this.ctx.fill();
+      }
+
+      // 3. Draw Nodes
+      for (let i = 0; i < this.nodes.length; i++) {
+        const node = this.nodes[i];
+        const isHovered = (i === activeNodeIdx);
+
+        // Outer glow ring
+        this.ctx.beginPath();
+        this.ctx.arc(node.x, node.y, node.radius + (isHovered ? 8 : 4), 0, Math.PI * 2);
+        this.ctx.fillStyle = isDark
+          ? (isHovered ? 'rgba(250, 204, 21, 0.28)' : 'rgba(255, 255, 255, 0.03)')
+          : (isHovered ? 'rgba(202, 138, 4, 0.22)' : 'rgba(0, 0, 0, 0.04)');
+        this.ctx.fill();
+
+        // Node circle background
+        this.ctx.beginPath();
+        this.ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        this.ctx.fillStyle = isDark ? '#131722' : '#ffffff';
+        this.ctx.strokeStyle = isHovered ? node.color : (isDark ? '#202637' : '#e2e8f0');
+        this.ctx.lineWidth = isHovered ? 2.5 : 1.5;
+        this.ctx.fill();
+        this.ctx.stroke();
+
+        // Inner glowing core
+        this.ctx.beginPath();
+        this.ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+        this.ctx.fillStyle = node.color;
+        this.ctx.fill();
+
+        // Node labels
+        this.ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+        this.ctx.font = `700 ${node.isHeroNode ? 12 : 11}px 'JetBrains Mono', monospace`;
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(node.label, node.x, node.y + node.radius + 15);
+
+        if (this.isInteractive || node.isHeroNode || isHovered) {
+          this.ctx.fillStyle = isDark ? '#cbd5e1' : '#64748b';
+          this.ctx.font = `500 9px 'JetBrains Mono', monospace`;
+          this.ctx.fillText(node.sub, node.x, node.y + node.radius + 28);
+        }
+      }
+
+      // 4. Hover Inspector Card
+      if (activeNodeIdx !== -1 && this.isInteractive) {
+        const hoveredNode = this.nodes[activeNodeIdx];
+        const cardW = 220;
+        const cardH = 68;
+        const cardX = Math.min(Math.max(hoveredNode.x - cardW / 2, 20), this.width - cardW - 20);
+        const cardY = hoveredNode.y - hoveredNode.radius - cardH - 12;
+
+        this.ctx.fillStyle = isDark ? 'rgba(19, 23, 34, 0.96)' : 'rgba(255, 255, 255, 0.96)';
+        this.ctx.strokeStyle = hoveredNode.color;
+        this.ctx.lineWidth = 1.5;
+
+        this.ctx.beginPath();
+        this.ctx.roundRect(cardX, cardY, cardW, cardH, 6);
+        this.ctx.fill();
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+        this.ctx.font = "700 11px 'JetBrains Mono', monospace";
+        this.ctx.textAlign = 'left';
+        this.ctx.fillText(hoveredNode.label, cardX + 12, cardY + 20);
+
+        this.ctx.fillStyle = hoveredNode.color;
+        this.ctx.font = "700 9px 'JetBrains Mono', monospace";
+        this.ctx.fillText(`STATUS: VERIFIED SECURE`, cardX + 12, cardY + 37);
+
+        this.ctx.fillStyle = isDark ? '#cbd5e1' : '#64748b';
+        this.ctx.font = "500 9px 'JetBrains Mono', monospace";
+        this.ctx.fillText(hoveredNode.sub, cardX + 12, cardY + 52);
+      }
+    }
+
+    private animate = () => {
+      this.update();
+      this.draw();
+      this.animId = requestAnimationFrame(this.animate);
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    new CryptoMeshVisualizer();
+  });
+</script>

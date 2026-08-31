@@ -1,0 +1,471 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const lastUpdated = 'August 31, 2026';
+
+const sections = [
+  { id: 'overview', title: '1. Privacy Overview' },
+  { id: 'info-we-process', title: '2. Information We Process' },
+  { id: 'messages-crypto', title: '3. End-to-End Encryption & Messages' },
+  { id: 'no-sale-data', title: '4. No Sale or Monetization of Data' },
+  { id: 'third-parties', title: '5. Third-Party Service Providers' },
+  { id: 'retention-deletion', title: '6. Data Retention & Account Deletion' },
+  { id: 'security-practices', title: '7. Security Practices & Storage' },
+  { id: 'children-privacy', title: '8. Children\'s Privacy' },
+  { id: 'rights-gdpr-ccpa', title: '9. Your Privacy Rights (GDPR / CCPA)' },
+  { id: 'updates-contact', title: '10. Policy Updates & Contact Us' },
+];
+---
+
+<Layout
+  title="Privacy Policy | DeezChatz"
+  description="DeezChatz Privacy Policy. Learn how our zero-trust, end-to-end encrypted architecture safeguards your messaging, keys, and privacy."
+  currentPath="/privacy"
+>
+  <div class="legal-page">
+    <div class="container">
+      <!-- Breadcrumb & Header -->
+      <div class="legal-header">
+        <nav class="breadcrumb font-mono" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span class="sep">/</span>
+          <span class="current">Legal</span>
+          <span class="sep">/</span>
+          <span class="current">Privacy Policy</span>
+        </nav>
+
+        <div class="legal-badge font-mono">
+          <span class="pulse-indicator"></span>
+          <span>PRIVACY POLICY // LAST MODIFIED: {lastUpdated}</span>
+        </div>
+
+        <h1 class="legal-title font-mono">Privacy Policy</h1>
+        <p class="legal-meta font-mono">
+          <span>Effective Date: {lastUpdated}</span>
+          <span class="meta-sep">&bull;</span>
+          <span>Official Domain: deez.in</span>
+        </p>
+      </div>
+
+      <!-- Main Layout: Sidebar TOC + Content -->
+      <div class="legal-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="legal-sidebar">
+          <div class="toc-sticky">
+            <h3 class="toc-title font-mono">TABLE OF CONTENTS</h3>
+            <ul class="toc-list font-mono">
+              {sections.map((sec) => (
+                <li>
+                  <a href={`#${sec.id}`} class="toc-link">{sec.title}</a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="sidebar-box tech-card font-mono">
+              <div class="box-label">SIGNAL-GRADE PRIVACY</div>
+              <p class="box-text">
+                Your messages are end-to-end encrypted with the Signal Protocol. We cannot view, decrypt, or share your communications with anyone.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Document Body -->
+        <article class="legal-content">
+          <!-- Summary Callout -->
+          <div class="callout-card tech-card">
+            <div class="callout-badge font-mono">OUR PRIVACY COMMITMENT</div>
+            <p class="callout-p">
+              <strong>DeezChatz</strong> ("Deez", "we", "us", or "our") utilizes state-of-the-art security and end-to-end encryption to provide private messaging, pre-key exchange, and offline notification routing to users worldwide ("Services"). Your messages, files, and calls are always end-to-end encrypted, so they can never be accessed, viewed, or decrypted by us or other third parties.
+            </p>
+          </div>
+
+          <!-- Section 1: Overview -->
+          <section id="overview" class="legal-section">
+            <h2 class="section-heading font-mono">1. Privacy Overview</h2>
+            <p>
+              DeezChatz is designed to operate on a zero-trust model. We collect and retain only the absolute minimum technical data necessary to route messages and maintain reliable service. Because cryptographic keys are created locally on your device and private keys never leave your possession, our servers operate purely as blind relays.
+            </p>
+          </section>
+
+          <!-- Section 2: Information We Process -->
+          <section id="info-we-process" class="legal-section">
+            <h2 class="section-heading font-mono">2. Information We Process</h2>
+            <p>
+              To provide our messaging services across mobile platforms, we process the following categories of information:
+            </p>
+            <ul class="legal-ul">
+              <li>
+                <strong>Account &amp; Registration Information:</strong> When you sign in using Google Sign-In, we verify your identity token and create a pseudonymous profile record in our DynamoDB database. We store your public Identity Key, Signed Pre-Key, and One-Time Pre-Key bundles. <em>We never access, request, or store your passwords or your private cryptographic keys.</em>
+              </li>
+              <li>
+                <strong>Technical Routing Tokens:</strong> We process randomly generated authentication session tokens and blind push notification tokens (Firebase Cloud Messaging / Apple Push Notification service) required to route wake-up signals to your device.
+              </li>
+              <li>
+                <strong>User Support Information:</strong> If you contact DeezChatz Support (via <code>support@deez.in</code> or <code>privacy@deez.in</code>), any email address or diagnostic logs you provide are retained solely for the purpose of investigating and resolving your inquiry.
+              </li>
+            </ul>
+          </section>
+
+          <!-- Section 3: Messages & Encryption -->
+          <section id="messages-crypto" class="legal-section">
+            <h2 class="section-heading font-mono">3. End-to-End Encryption &amp; Messages</h2>
+            <p>
+              <strong>Messages Cannot Be Read by DeezChatz:</strong> All messages, text, media, and attachments sent through DeezChatz are encrypted on your device before transmission using the <strong>Signal Protocol</strong> (X3DH Key Agreement, Double Ratchet, and VXEdDSA signatures implemented via <code>libsignal-dezire</code>).
+            </p>
+            <ul class="legal-ul">
+              <li>
+                <strong>Ephemeral Server Queuing:</strong> If a recipient is temporarily offline, end-to-end encrypted message blobs are held ephemerally on our stateless relays until delivered or expired. Once acknowledged by the recipient device, the message payload is permanently deleted from our server memory.
+              </li>
+              <li>
+                <strong>Local Storage:</strong> Your full message history, chat threads, and contacts are stored exclusively on your own personal device, encrypted at rest using <strong>SQLCipher</strong> (AES-256-CBC via <code>expo-sqlite</code>).
+              </li>
+            </ul>
+          </section>
+
+          <!-- Section 4: No Sale of Data -->
+          <section id="no-sale-data" class="legal-section">
+            <h2 class="section-heading font-mono">4. No Sale or Monetization of Data</h2>
+            <p>
+              DeezChatz does not sell, rent, monetize, trade, or share your personal data, metadata, or communications with advertisers, data brokers, or commercial third parties — ever.
+            </p>
+            <p>
+              Our applications contain <strong>zero third-party advertising SDKs</strong>, zero tracking beacons, and zero cross-app behavioral analytics libraries.
+            </p>
+          </section>
+
+          <!-- Section 5: Third-Party Service Providers -->
+          <section id="third-parties" class="legal-section">
+            <h2 class="section-heading font-mono">5. Third-Party Service Providers</h2>
+            <p>
+              We partner with select infrastructure providers solely for technical service delivery:
+            </p>
+            <ul class="legal-ul">
+              <li>
+                <strong>Google Identity Services (OAuth):</strong> Authenticates user credentials via native Google Sign-In on Android (Credential Manager) and iOS (GIDSignIn).
+              </li>
+              <li>
+                <strong>Push Notification Gateways:</strong> Google Firebase Cloud Messaging (FCM) and Apple Push Notification service (APNs) are utilized solely to send silent, data-only wake-up notifications. <em>Push payloads contain no message text, no media, and no decrypted sender identity.</em>
+              </li>
+              <li>
+                <strong>Cloud Infrastructure:</strong> Amazon Web Services (DynamoDB for public key bundles) and Redis/RMQTT clusters for real-time transport.
+              </li>
+              <li>
+                <strong>Law Enforcement Requests:</strong> If presented with a lawful court order or subpoena, we can only confirm whether a public key account exists and when it was created. Because all messages and keys are end-to-end encrypted, we cannot provide plaintext message contents, call audio, or contact logs.
+              </li>
+            </ul>
+          </section>
+
+          <!-- Section 6: Data Retention & Account Deletion (Google Play Store Mandate) -->
+          <section id="retention-deletion" class="legal-section">
+            <h2 class="section-heading font-mono">6. Data Retention &amp; Account Deletion</h2>
+            <p>
+              In full compliance with <strong>Google Play Data Safety</strong> and <strong>Apple App Store</strong> standards, DeezChatz provides clear, straightforward account and data deletion mechanisms:
+            </p>
+            <ul class="legal-ul">
+              <li>
+                <strong>In-App Deletion:</strong> You can delete your account at any time directly within the mobile application by navigating to <code>Settings &rarr; Privacy &amp; Security &rarr; Delete Account</code>. Initiating account deletion immediately and permanently wipes your public pre-key bundles and profile record from our DynamoDB servers and erases your local SQLCipher database.
+              </li>
+              <li>
+                <strong>Deletion via Support:</strong> You may also request deletion of your account record by sending an email from your authenticated address to <code>privacy@deez.in</code> with the subject line <em>"Account Deletion Request"</em>. Requests are processed within 3 business days.
+              </li>
+              <li>
+                <strong>Local App Uninstallation:</strong> Uninstalling the DeezChatz application immediately purges all locally stored cryptographic private keys, ratchet states, and message databases from your device's internal storage.
+              </li>
+            </ul>
+          </section>
+
+          <!-- Section 7: Security Practices -->
+          <section id="security-practices" class="legal-section">
+            <h2 class="section-heading font-mono">7. Security Practices &amp; Storage</h2>
+            <p>
+              We implement industry-standard administrative, physical, and technical safeguards:
+            </p>
+            <ul class="legal-ul">
+              <li>
+                <strong>Data in Transit:</strong> All communication between client applications, APIs, and message relays is encrypted using TLS 1.3 / HTTPS and MQTT over TLS.
+              </li>
+              <li>
+                <strong>Data at Rest:</strong> Local application databases are encrypted using SQLCipher with keys derived from hardware-backed key stores (Apple Secure Enclave on iOS, Android StrongBox / KeyStore).
+              </li>
+              <li>
+                <strong>Open Source Verification:</strong> All cryptographic primitives and application code are open source and subject to public review at <a href="https://github.com/deez-in" target="_blank" rel="noopener noreferrer">github.com/deez-in &nearr;</a>.
+              </li>
+            </ul>
+          </section>
+
+          <!-- Section 8: Children's Privacy -->
+          <section id="children-privacy" class="legal-section">
+            <h2 class="section-heading font-mono">8. Children's Privacy</h2>
+            <p>
+              DeezChatz is not directed to children under the age of 13. We do not knowingly collect or solicit personal information from children under 13. If we become aware that a child under 13 has provided us with personal information, we will take prompt steps to delete such information from our servers.
+            </p>
+          </section>
+
+          <!-- Section 9: Your Privacy Rights (GDPR / CCPA) -->
+          <section id="rights-gdpr-ccpa" class="legal-section">
+            <h2 class="section-heading font-mono">9. Your Privacy Rights (GDPR / CCPA)</h2>
+            <p>
+              Depending on your jurisdiction (such as the European Economic Area, the United Kingdom, or the State of California), you have specific statutory privacy rights:
+            </p>
+            <ul class="legal-ul">
+              <li>
+                <strong>Right to Access &amp; Portability:</strong> You have the right to request a copy of the minimal technical data associated with your account.
+              </li>
+              <li>
+                <strong>Right to Erasure ("Right to be Forgotten"):</strong> You have the right to request that we delete your server profile and pre-key bundles.
+              </li>
+              <li>
+                <strong>Non-Discrimination:</strong> We will not discriminate against you in pricing, service level, or features for exercising any of your privacy rights.
+              </li>
+            </ul>
+          </section>
+
+          <!-- Section 10: Updates & Contact Us -->
+          <section id="updates-contact" class="legal-section">
+            <h2 class="section-heading font-mono">10. Policy Updates &amp; Contact Us</h2>
+            <p>
+              We may update this Privacy Policy periodically. When we make updates, we will update the "Last Modified" date at the top of this document and notify users through application release notes where appropriate.
+            </p>
+
+            <p>
+              If you have questions, feedback, or concerns regarding our Privacy Policy or data handling practices, please reach out to our team:
+            </p>
+            <div class="contact-card font-mono">
+              <div><strong>Data Protection &amp; Privacy:</strong> privacy@deez.in</div>
+              <div><strong>User Support:</strong> support@deez.in</div>
+              <div><strong>Security Team:</strong> security@deez.in</div>
+              <div><strong>Official Domain:</strong> <a href="https://deez.in">https://deez.in</a></div>
+            </div>
+          </section>
+        </article>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .legal-page {
+    padding-block: 3.5rem 6rem;
+  }
+
+  .legal-header {
+    margin-bottom: 3.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .breadcrumb a {
+    color: var(--accent-primary);
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .sep {
+    color: var(--text-dim);
+  }
+
+  .legal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.625rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+  }
+
+  .legal-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .legal-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+
+  /* Two-column layout */
+  .legal-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  @media (min-width: 1024px) {
+    .legal-layout {
+      grid-template-columns: 280px 1fr;
+      gap: 4rem;
+    }
+  }
+
+  /* Sticky TOC */
+  .toc-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .toc-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .toc-link {
+    color: var(--text-secondary);
+    display: block;
+    padding-block: 0.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .toc-link:hover {
+    color: var(--accent-primary);
+    transform: translateX(3px);
+  }
+
+  .sidebar-box {
+    padding: 1.25rem;
+    background-color: var(--bg-card);
+    font-size: 0.75rem;
+  }
+
+  .box-label {
+    color: var(--accent-primary);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .box-text {
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Content */
+  .legal-content {
+    max-width: 52rem;
+  }
+
+  .callout-card {
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    background-color: var(--bg-card);
+    border-left: 3px solid var(--accent-primary);
+  }
+
+  .callout-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .callout-p {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .legal-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .legal-section:last-child {
+    border-bottom: none;
+  }
+
+  .section-heading {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+    scroll-margin-top: calc(var(--header-height) + 2rem);
+  }
+
+  .legal-section p {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .legal-ul {
+    list-style: none;
+    margin-block: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding-left: 0.5rem;
+  }
+
+  .legal-ul li {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    position: relative;
+    padding-left: 1.25rem;
+  }
+
+  .legal-ul li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent-primary);
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1;
+  }
+
+  .contact-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 1.25rem;
+    font-size: 0.8125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+  }
+
+  .contact-card a {
+    color: var(--accent-primary);
+  }
+</style>

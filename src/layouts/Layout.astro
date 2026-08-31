@@ -1,0 +1,123 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentPath?: string;
+}
+
+const {
+  title = 'DeezChatz | Zero-Knowledge End-to-End Encrypted Messaging',
+  description = 'DeezChatz is a high-performance, zero-knowledge, end-to-end encrypted messaging platform powered by the Signal Double Ratchet protocol, rust-native core, and metadata-shielding relays.',
+  currentPath = '/',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO & Metadata -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#08090d" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="DeezChatz" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Anti-FOUC Theme Script -->
+    <script is:inline>
+      (() => {
+        try {
+          const storedTheme = localStorage.getItem('deezchatz_theme');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (storedTheme === 'dark' || (!storedTheme && systemPrefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else if (storedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+          } else {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Background Atmosphere & Grid Layer (Deep Background) -->
+    <div class="bg-glow-top" aria-hidden="true"></div>
+    <div class="bg-grid-overlay" aria-hidden="true"></div>
+
+    <!-- Navigation (Sticky Foreground) -->
+    <Navbar currentPath={currentPath} />
+
+    <!-- Main Content (Foreground) -->
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <Footer />
+  </body>
+</html>
+
+<style>
+  /* Deep Background Atmosphere */
+  .bg-glow-top {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    max-width: 1400px;
+    height: 600px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(250, 204, 21, 0.08) 0%, rgba(250, 204, 21, 0.02) 50%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  :global(html:not(.dark)) .bg-glow-top {
+    background: radial-gradient(ellipse at 50% 0%, rgba(202, 138, 4, 0.07) 0%, rgba(202, 138, 4, 0.01) 50%, transparent 70%);
+  }
+
+  .bg-grid-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+    background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: 0 0;
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 80%);
+  }
+
+  :global(html.dark) .bg-grid-overlay {
+    opacity: 0.22;
+  }
+
+  #main-content {
+    position: relative;
+    z-index: 1;
+    min-height: calc(100vh - var(--header-height));
+    padding-top: var(--header-height);
+  }
+</style>

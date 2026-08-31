@@ -1,0 +1,186 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Brand & Mission -->
+      <div class="footer-brand">
+        <a href="/" class="brand-logo">
+          <span class="logo-text font-mono">deez<span class="logo-ext">.in</span></span>
+        </a>
+        <p class="brand-desc">
+          State-of-the-art zero-knowledge, end-to-end encrypted messaging. No logs, no telemetry, no compromises.
+        </p>
+        <div class="cipher-spec font-mono">
+          <span>ALGO: X3DH + DOUBLE RATCHET</span>
+          <span>CURVE: CURVE25519 / ED25519</span>
+          <span>CIPHER: AES-256-GCM / HMAC-SHA256</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="footer-col">
+        <h4 class="col-title font-mono">Architecture</h4>
+        <ul class="col-links font-mono">
+          <li><a href="/#demo">Interactive Crypto Demo</a></li>
+          <li><a href="/#ecosystem">Ecosystem Overview</a></li>
+          <li><a href="/#features">Zero-Knowledge Specs</a></li>
+          <li><a href="/#opensource">Open Source Repos</a></li>
+          <li><a href="/#faq">Technical FAQ</a></li>
+        </ul>
+      </div>
+
+      <!-- Open Source & Developers -->
+      <div class="footer-col">
+        <h4 class="col-title font-mono">Developers</h4>
+        <ul class="col-links font-mono">
+          <li><a href="https://github.com/deez-in" target="_blank" rel="noopener noreferrer">GitHub Organization &nearr;</a></li>
+          <li><a href="https://github.com/deez-in/deezchatz-mobile" target="_blank" rel="noopener noreferrer">deezchatz-mobile &nearr;</a></li>
+          <li><a href="https://github.com/deez-in/deezchatz-api" target="_blank" rel="noopener noreferrer">deezchatz-api &nearr;</a></li>
+          <li><a href="https://github.com/deez-in/libsignal-dezire" target="_blank" rel="noopener noreferrer">libsignal-dezire &nearr;</a></li>
+          <li><a href="https://github.com/deez-in/deezchatz-infra" target="_blank" rel="noopener noreferrer">deezchatz-infra &nearr;</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal & Trust -->
+      <div class="footer-col">
+        <h4 class="col-title font-mono">Legal & Trust</h4>
+        <ul class="col-links font-mono">
+          <li><a href="/tos">Terms of Service</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">Independent Audit Report &nearr;</a></li>
+          <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">Canary & Warrant Statement &nearr;</a></li>
+          <li><a href="mailto:security@deez.in">Security Vulnerability Bounty</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom font-mono">
+      <div class="copyright">
+        &copy; {year} DeezChatz Project. Free & Open Source Software under MIT/Apache-2.0.
+      </div>
+      <div class="node-status">
+        <span class="pulse-indicator"></span>
+        <span>NETWORK MESH: ONLINE [100% E2EE]</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 4.5rem;
+    padding-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    margin-bottom: 4rem;
+  }
+
+  @media (min-width: 640px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 1.8fr 1fr 1fr 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  .brand-logo {
+    display: inline-block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .logo-ext {
+    color: var(--accent-primary);
+  }
+
+  .brand-desc {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    max-width: 22rem;
+    line-height: 1.6;
+  }
+
+  .cipher-spec {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    max-width: 22rem;
+  }
+
+  .col-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+  }
+
+  .col-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .col-links a {
+    color: var(--text-secondary);
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+  }
+
+  .col-links a:hover {
+    color: var(--accent-primary);
+    transform: translateX(2px);
+  }
+
+  .footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  @media (min-width: 768px) {
+    .footer-bottom {
+      flex-direction: row;
+    }
+  }
+
+  .node-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent-primary);
+  }
+</style>
