@@ -4,16 +4,16 @@ import Layout from '../layouts/Layout.astro';
 const lastUpdated = 'August 31, 2026';
 
 const sections = [
-  { id: 'overview', title: '1. Privacy Overview' },
-  { id: 'info-we-process', title: '2. Information We Process' },
-  { id: 'messages-crypto', title: '3. End-to-End Encryption & Messages' },
-  { id: 'no-sale-data', title: '4. No Sale or Monetization of Data' },
-  { id: 'third-parties', title: '5. Third-Party Service Providers' },
-  { id: 'retention-deletion', title: '6. Data Retention & Account Deletion' },
-  { id: 'security-practices', title: '7. Security Practices & Storage' },
-  { id: 'children-privacy', title: '8. Children\'s Privacy' },
-  { id: 'rights-gdpr-ccpa', title: '9. Your Privacy Rights (GDPR / CCPA)' },
-  { id: 'updates-contact', title: '10. Policy Updates & Contact Us' },
+  { id: "overview", title: "1. Privacy Overview" },
+  { id: "info-we-process", title: "2. Information We Process" },
+  { id: "messages-crypto", title: "3. End-to-End Encryption & Messages" },
+  { id: "no-sale-data", title: "4. No Sale or Monetization of Data" },
+  { id: "third-parties", title: "5. Third-Party Service Providers" },
+  { id: "retention-deletion", title: "6. Data Retention & Account Deletion" },
+  { id: "security-practices", title: "7. Security Practices & Storage" },
+  { id: "children-privacy", title: "8. Children's Privacy" },
+  { id: "rights-gdpr-ccpa", title: "9. Your Privacy Rights (GDPR / CCPA)" },
+  { id: "updates-contact", title: "10. Policy Updates & Contact Us" },
 ];
 ---
 
@@ -127,7 +127,7 @@ const sections = [
           <section id="no-sale-data" class="legal-section">
             <h2 class="section-heading font-mono">4. No Sale or Monetization of Data</h2>
             <p>
-              DeezChatz does not sell, rent, monetize, trade, or share your personal data, metadata, or communications with advertisers, data brokers, or commercial third parties — ever.
+              DeezChatz does not sell, rent, monetize, trade, or share your personal data, metadata, or communications with advertisers, data brokers, or commercial third parties &mdash; ever.
             </p>
             <p>
               Our applications contain <strong>zero third-party advertising SDKs</strong>, zero tracking beacons, and zero cross-app behavioral analytics libraries.
@@ -163,6 +163,9 @@ const sections = [
               In full compliance with <strong>Google Play Data Safety</strong> and <strong>Apple App Store</strong> standards, DeezChatz provides clear, straightforward account and data deletion mechanisms:
             </p>
             <ul class="legal-ul">
+              <li>
+                <strong>Web Deletion Portal:</strong> You can delete your account from our backend servers and disconnect all registered devices directly via our <a href="/delete-user" style="color: var(--accent-primary); font-weight: 600; text-decoration: underline;">Web Account Deletion Portal (/delete-user)</a> by authenticating with your registered Google Account.
+              </li>
               <li>
                 <strong>In-App Deletion:</strong> You can delete your account at any time directly within the mobile application by navigating to <code>Settings &rarr; Privacy &amp; Security &rarr; Delete Account</code>. Initiating account deletion immediately and permanently wipes your public pre-key bundles and profile record from our DynamoDB servers and erases your local SQLCipher database.
               </li>
