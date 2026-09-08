@@ -1,0 +1,431 @@
+---
+// Component for the irreversible deletion confirmation modal with safety countdown
+---
+
+<!-- Deletion Confirmation Popup Modal with 10s Countdown -->
+<div id="deletion-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-dialog tech-card">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-warning-tag font-mono">
+        <svg class="warning-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <span>FINAL WARNING // PERMANENT DELETION</span>
+      </div>
+      <button id="modal-close-btn" class="modal-close" aria-label="Cancel deletion modal" type="button">&times;</button>
+    </div>
+
+    <!-- Authenticated User Banner -->
+    <div class="user-id-banner">
+      <div class="user-avatar" id="modal-user-avatar">?</div>
+      <div class="user-info font-mono">
+        <span class="user-label">AUTHENTICATED IDENTITY:</span>
+        <span id="modal-user-email" class="user-email">loading...</span>
+      </div>
+    </div>
+
+    <!-- Final Warning Text -->
+    <div class="modal-body">
+      <h3 id="modal-title" class="modal-heading font-mono">Confirm Irreversible Account Deletion</h3>
+      <p class="modal-p">
+        You are about to permanently delete your DeezChatz account from the backend infrastructure.
+      </p>
+
+      <div class="modal-warning-list font-mono">
+        <div class="warn-item">
+          <span class="warn-bullet">&bull;</span>
+          <span>All public key bundles and server records will be permanently erased.</span>
+        </div>
+        <div class="warn-item">
+          <span class="warn-bullet">&bull;</span>
+          <span>All registered client devices will be disconnected immediately.</span>
+        </div>
+        <div class="warn-item">
+          <span class="warn-bullet">&bull;</span>
+          <span>Chats persist on your devices: you must uninstall the apps to delete local chat data.</span>
+        </div>
+      </div>
+
+      <!-- Countdown Timer Presentation -->
+      <div class="countdown-wrapper font-mono">
+        <div class="countdown-circle">
+          <svg class="progress-ring" width="84" height="84">
+            <circle class="progress-ring-bg" stroke-width="4" fill="transparent" r="38" cx="42" cy="42" />
+            <circle id="countdown-progress-circle" class="progress-ring-fg" stroke-width="4" fill="transparent" r="38" cx="42" cy="42" />
+          </svg>
+          <span id="countdown-number" class="countdown-digits">10</span>
+        </div>
+        <div class="countdown-desc">
+          <div id="countdown-status-text" class="countdown-status">Safety delay active: 10 seconds remaining</div>
+          <div class="countdown-sub">Deletion button unlocks once countdown completes to prevent accidental deletion.</div>
+        </div>
+      </div>
+
+      <!-- Loading State Indicator (Hidden until button is clicked) -->
+      <div id="modal-loading-state" class="modal-loading-indicator hidden font-mono">
+        <div class="spinner"></div>
+        <div class="loading-labels">
+          <div class="loading-title">Deleting account from backend...</div>
+          <div class="loading-sub">Revoking pre-keys and terminating registered device sessions...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Actions -->
+    <div class="modal-footer">
+      <button id="modal-cancel-btn" type="button" class="btn-tech btn-tech-outline">
+        Cancel
+      </button>
+      <!-- Disabled for 10 seconds, then becomes active -->
+      <button id="modal-confirm-delete-btn" type="button" class="btn-tech btn-tech-danger disabled" disabled>
+        <span class="btn-content-default">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span id="delete-btn-label">Confirm Deletion (10s)</span>
+        </span>
+        <span class="btn-content-loading hidden">
+          <span class="btn-spinner"></span>
+          <span>Processing Deletion...</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Modal Backdrop & Dialog */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+
+  .modal-backdrop.hidden {
+    display: none;
+    opacity: 0;
+  }
+
+  .modal-dialog {
+    width: 100%;
+    max-width: 560px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes modalScaleUp {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+  }
+
+  .modal-warning-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #ef4444;
+    letter-spacing: 0.05em;
+  }
+
+  .warning-icon-sm {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .modal-close {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0.25rem;
+  }
+
+  .modal-close:hover {
+    color: var(--text-primary);
+  }
+
+  /* User Identity Banner in Modal */
+  .user-id-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .user-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background-color: var(--accent-primary);
+    color: #000000;
+    font-weight: 700;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .user-avatar :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.75rem;
+  }
+
+  .user-label {
+    color: var(--text-muted);
+  }
+
+  .user-email {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+
+  /* Modal Content */
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }
+
+  .modal-warning-list {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.875rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+
+  .warn-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .warn-bullet {
+    color: #ef4444;
+    font-weight: 700;
+  }
+
+  /* Countdown Presentation */
+  .countdown-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--radius-sm);
+  }
+
+  .countdown-circle {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+
+  .progress-ring-bg {
+    stroke: var(--border-color);
+  }
+
+  .progress-ring-fg {
+    stroke: #ef4444;
+    stroke-dasharray: 238.76;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+  }
+
+  .countdown-digits {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ef4444;
+  }
+
+  .countdown-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .countdown-status {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .countdown-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* Modal Loading Indicator */
+  .modal-loading-indicator {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .modal-loading-indicator.hidden {
+    display: none;
+  }
+
+  .spinner {
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 3px solid var(--border-color);
+    border-top-color: #ef4444;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .loading-sub {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+  }
+
+  /* Modal Footer */
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+  }
+
+  /* Danger Button Styling */
+  .btn-tech-danger {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .btn-tech-danger:hover:not(:disabled) {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  }
+
+  .btn-tech-danger:disabled,
+  .btn-tech-danger.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background-color: #4b5563;
+    border-color: #4b5563;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .btn-content-default,
+  .btn-content-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-content-loading.hidden {
+    display: none;
+  }
+
+  .btn-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ffffff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+</style>
