@@ -31,11 +31,11 @@
   --accent-purple: #7c3aed;
   --accent-purple-light: rgba(124, 58, 237, 0.1);
 
-  /* Code / Terminal Styling */
-  --terminal-bg: #0b0f17;
-  --terminal-text: #f8fafc;
-  --terminal-border: #1e293b;
-  --terminal-accent: #facc15;
+  /* Code / Terminal Styling - Light Mode */
+  --terminal-bg: #f0f2f5;
+  --terminal-text: #0f172a;
+  --terminal-border: #e2e8f0;
+  --terminal-accent: #ca8a04;
 
   /* Typography */
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -43,12 +43,12 @@
 
   /* Shadows & Foreground Elevations */
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 14px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 10px 25px -3px rgba(15, 23, 42, 0.1), 0 4px 10px -4px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 10px -4px rgba(0, 0, 0, 0.05);
   --shadow-glow: 0 0 30px rgba(202, 138, 4, 0.2);
 
   /* Layout */
-  --max-width: 1320px;
+  --max-width: 1536px;
   --header-height: 4.25rem;
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -56,21 +56,21 @@
 }
 
 html.dark {
-  /* Color Palette - Dark Mode */
-  --bg-primary: #08090d;
-  --bg-secondary: #0e1118;
-  --bg-card: #131722;
-  --bg-card-hover: #181d2b;
-  --bg-surface: #1e2436;
-  --bg-glass: rgba(8, 9, 13, 0.88);
+  /* Color Palette - Dark Mode (Neutral Black & Charcoal Grey, Zero Blue Tint) */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #121212;
+  --bg-card: #171717;
+  --bg-card-hover: #1f1f1f;
+  --bg-surface: #262626;
+  --bg-glass: rgba(10, 10, 10, 0.88);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #808ea3;
-  --text-dim: #475569;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  --text-dim: #525252;
 
-  --border-color: #202637;
-  --border-subtle: #161b27;
+  --border-color: #262626;
+  --border-subtle: #1c1c1c;
   --border-active: #facc15;
 
   /* Cryptographic & Brand Accents - Vibrant Cyber Yellow */
@@ -87,9 +87,9 @@ html.dark {
   --accent-purple-light: rgba(167, 139, 250, 0.12);
 
   /* Code / Terminal Styling */
-  --terminal-bg: #090c12;
-  --terminal-text: #f8fafc;
-  --terminal-border: #202637;
+  --terminal-bg: #0d0d0d;
+  --terminal-text: #f5f5f5;
+  --terminal-border: #262626;
   --terminal-accent: #facc15;
 
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
@@ -191,20 +191,14 @@ button {
 }
 
 .section-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--accent-primary);
-  margin-bottom: 0.875rem;
-  padding: 0.25rem 0.625rem;
-  background: var(--accent-primary-light);
-  border: 1px solid var(--accent-primary-glow);
-  border-radius: var(--radius-sm);
+  margin-bottom: 0.75rem;
 }
 
 .section-title {
@@ -310,27 +304,9 @@ button {
   box-shadow: var(--shadow-lg);
 }
 
-/* Pulse / Live indicator */
+/* Status indicator (Non-blinking) */
 .pulse-indicator {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--accent-primary);
-  box-shadow: 0 0 0 0 var(--accent-primary-glow);
-  animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-}
-
-@keyframes pulse-ring {
-  0% {
-    box-shadow: 0 0 0 0 var(--accent-primary-glow);
-  }
-  70% {
-    box-shadow: 0 0 0 8px rgba(250, 204, 21, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0);
-  }
+  display: none !important;
 }
 
 /* Scrollbar Customization */

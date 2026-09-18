@@ -34,6 +34,7 @@ const year = new Date().getFullYear();
       <div class="footer-col">
         <h4 class="col-title font-mono">Architecture</h4>
         <ul class="col-links font-mono">
+          <li><a href="/docs">Developer Documentation</a></li>
           <li><a href="/#demo">Interactive Crypto Demo</a></li>
           <li><a href="/#ecosystem">Ecosystem Overview</a></li>
           <li><a href="/#features">Zero-Knowledge Specs</a></li>
@@ -47,6 +48,9 @@ const year = new Date().getFullYear();
         <h4 class="col-title font-mono">Developers</h4>
         <ul class="col-links font-mono">
           <li><a href="https://github.com/deez-in" target="_blank" rel="noopener noreferrer">GitHub Organization &nearr;</a></li>
+          <li><a href="/docs">Documentation Portal &rarr;</a></li>
+          <li><a href="https://github.com/deez-in/deezchatz-sdk-rust" target="_blank" rel="noopener noreferrer">deezchatz-sdk-rust &nearr;</a></li>
+          <li><a href="https://github.com/deez-in/deezchatz-cli" target="_blank" rel="noopener noreferrer">deezchatz-cli &nearr;</a></li>
           <li><a href="https://github.com/deez-in/deezchatz-mobile" target="_blank" rel="noopener noreferrer">deezchatz-mobile &nearr;</a></li>
           <li><a href="https://github.com/deez-in/deezchatz-api" target="_blank" rel="noopener noreferrer">deezchatz-api &nearr;</a></li>
           <li><a href="https://github.com/deez-in/libsignal-dezire" target="_blank" rel="noopener noreferrer">libsignal-dezire &nearr;</a></li>
@@ -73,8 +77,14 @@ const year = new Date().getFullYear();
       <div class="copyright">
         &copy; {year} DeezChatz Project. Free & Open Source Software under MIT/Apache-2.0.
       </div>
+      <div class="footer-legal-links font-mono">
+        <a href="/tos">Terms of Service</a>
+        <span class="legal-sep">&bull;</span>
+        <a href="/privacy">Privacy Policy</a>
+        <span class="legal-sep">&bull;</span>
+        <a href="/delete-user">Delete Account</a>
+      </div>
       <div class="node-status">
-        <span class="pulse-indicator"></span>
         <span>NETWORK MESH: ONLINE [100% E2EE]</span>
       </div>
     </div>
@@ -232,6 +242,28 @@ const year = new Date().getFullYear();
     .footer-bottom {
       flex-direction: row;
     }
+  }
+
+  .footer-legal-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .footer-legal-links a {
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+  }
+
+  .footer-legal-links a:hover {
+    color: var(--accent-primary);
+  }
+
+  .legal-sep {
+    color: var(--border-color);
   }
 
   .node-status {

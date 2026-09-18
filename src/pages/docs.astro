@@ -1,0 +1,1271 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const docSections = [
+  { id: 'specifications', title: '1. Cryptographic Specifications' },
+  { id: 'core-crypto', title: '2. Core Engine (libsignal-dezire)' },
+  { id: 'sdk', title: '3. DeezChatz SDK (Rust)' },
+  { id: 'sdk-mapping', title: '   - Protocol vs. SDK Step Mapping' },
+  { id: 'sdk-backend', title: '   - Backend & Cloud Integration' },
+  { id: 'sdk-example', title: '   - Quickstart Code Walkthrough' },
+  { id: 'clients-cli', title: '4. Clients & CLI Tools' },
+  { id: 'backend-infra', title: '5. Backend Engine & Infrastructure' },
+  { id: 'native-modules', title: '6. React Native / Expo Modules' },
+];
+
+const specifications = [
+  {
+    name: 'X3DH (Extended Triple Diffie-Hellman)',
+    slug: 'x3dh',
+    badge: 'KEY AGREEMENT',
+    summary: 'Establishes a shared secret key between two parties who mutually authenticate each other based on public keys, even if one party is offline.',
+    details: 'X3DH combines identity keys, signed prekeys, and one-time prekeys via 3 (or 4) separate Diffie-Hellman operations (DH1, DH2, DH3, DH4). It guarantees perfect forward secrecy and cryptographic deniability.',
+    refLink: 'https://signal.org/docs/specifications/x3dh/',
+  },
+  {
+    name: 'Double Ratchet Algorithm',
+    slug: 'double-ratchet',
+    badge: 'SESSION ENCRYPTION',
+    summary: 'Used by two communicating parties to exchange encrypted messages with forward secrecy and break-in recovery.',
+    details: 'Derived keys change on every single message turn using a KDF chain and ephemeral Diffie-Hellman ratchet pairs. Even if state keys are compromised at time T, past and future messages remain completely undecryptable.',
+    refLink: 'https://signal.org/docs/specifications/doubleratchet/',
+  },
+  {
+    name: 'VXEdDSA & XEdDSA',
+    slug: 'vxeddsa',
+    badge: 'DIGITAL SIGNATURES',
+    summary: 'EdDSA-compatible signatures and Verifiable Random Functions (VRF) using Curve25519 elliptic curve keys.',
+    details: 'Allows the same Curve25519 key pair to be utilized seamlessly for both Diffie-Hellman key exchanges (X25519) and high-speed cryptographic signatures without cross-protocol vulnerabilities.',
+    refLink: 'https://signal.org/docs/specifications/xeddsa/',
+  },
+];
+
+const stepMappings = [
+  {
+    step: '1. Identity & Pre-Keys',
+    rawSpec: 'Manually generate Curve25519 Identity Key (IK), Signed Prekey (SPK), signature using VXEdDSA, and a batch of 100 One-Time Prekeys (OPKs). Calculate key fingerprints and serializations.',
+    sdkFlow: '`client.generate_prekey_bundle(100)?`',
+    benefit: 'Automates key generation, cryptographic signing, batching, and serialization with hardware-backed randomness in a single call.',
+  },
+  {
+    step: '2. Pre-Key Publishing & Verification',
+    rawSpec: 'Construct cryptographic payloads, authenticate against directory server, verify signature validity, upload public components, and track OPK depletion on disk.',
+    sdkFlow: '`client.publish_keys_to_backend(&api_client).await?`',
+    benefit: 'Validates cryptographic signatures locally before issuing an authenticated API request to `deezchatz-api` to store bundles in DynamoDB.',
+  },
+  {
+    step: '3. Session Initialization (X3DH)',
+    rawSpec: 'Download target prekey bundle. Compute DH1 = DH(IK_A, SPK_B), DH2 = DH(EK_A, IK_B), DH3 = DH(EK_A, SPK_B), and optional DH4 = DH(EK_A, OPK_B). Mix into KDF to derive root key (SK).',
+    sdkFlow: '`client.start_session(&recipient_id).await?`',
+    benefit: 'The SDK queries `deezchatz-api` for the recipient\'s active bundle, verifies the SPK signature, performs all DH calculations, and initializes the ratchet state.',
+  },
+  {
+    step: '4. Message Encryption (Double Ratchet)',
+    rawSpec: 'Advance sending KDF chain, derive message key (MK) and next chain key (CK). Increment counter. Encrypt plaintext with AES-256-GCM. Attach ephemeral DH public key and header.',
+    sdkFlow: '`session.encrypt(b"Hello world")?`',
+    benefit: 'Returns a ready-to-transmit Sealed Envelope containing ratchet headers, encrypted payload, and MAC verification tags without exposing metadata.',
+  },
+  {
+    step: '5. Decryption & Out-of-Order Handling',
+    rawSpec: 'Parse ratchet header. If new DH key received, perform DH ratchet. If counter skipped, compute skipped message keys, store in cache with TTL, and advance receiving chain.',
+    sdkFlow: '`client.decrypt_message(&sender_id, &payload)?`',
+    benefit: 'Handles out-of-order packets, delayed deliveries, and replay attacks automatically, decrypting safely to plaintext bytes.',
+  },
+  {
+    step: '6. Storage & State Persistence',
+    rawSpec: 'Serialize session state, ratchet keys, skipped keys, and message counters securely into an encrypted database (SQLCipher) using device master keys.',
+    sdkFlow: 'Integrated background encrypted storage engine',
+    benefit: 'Session state is automatically committed to an encrypted persistent store, preventing key reuse or state desynchronization across crashes.',
+  },
+];
+---
+
+<Layout
+  title="Documentation & Specifications | DeezChatz"
+  description="Technical specifications, cryptographic protocol documentation, and software libraries for the DeezChatz zero-knowledge ecosystem."
+  currentPath="/docs"
+>
+  <div class="docs-page">
+    <div class="container">
+      <!-- Main Layout: Sidebar Navigation + Content Body -->
+      <div class="docs-layout">
+        <!-- Sticky Sidebar Navigation -->
+        <aside class="docs-sidebar">
+          <div class="sidebar-sticky">
+            <h3 class="sidebar-heading font-mono">DOCUMENTATION INDEX</h3>
+            <ul class="sidebar-nav font-mono">
+              {docSections.map((sec) => (
+                <li>
+                  <a href={`#${sec.id}`} class="sidebar-link">{sec.title}</a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="sidebar-card tech-card font-mono">
+              <div class="card-status-dot"></div>
+              <div class="card-title">ARCHITECTURE PRINCIPLE</div>
+              <p class="card-p">
+                Zero plaintext storage, zero server trust. Keys are generated client-side and ciphertexts are relayed statelessly over diskless RMQTT brokers.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <article class="docs-content">
+          <!-- Breadcrumb & Page Header -->
+          <div class="docs-header">
+            <nav class="breadcrumb font-mono" aria-label="Breadcrumb">
+              <a href="/">Home</a>
+              <span class="sep">/</span>
+              <span class="current">Docs</span>
+              <span class="sep">/</span>
+              <span class="current">Specifications &amp; Libraries</span>
+            </nav>
+
+            <div class="docs-badge font-mono">
+              <span>DEEZCHATZ DEVELOPER ECOSYSTEM // SPECIFICATIONS &amp; ARCHITECTURE</span>
+            </div>
+
+            <h1 class="docs-title font-mono">Specifications &amp; Software Libraries</h1>
+            <p class="docs-lead">
+              Encryption in messaging environments integrates many ideas which often need to be composed separately in different applications. We make an effort to break out ideas into independent specifications so that they can be integrated as appropriate for different projects, while providing an intuitive, unified Rust SDK that encapsulates complex cryptographic handshakes into clean, idiomatic developer workflows.
+            </p>
+
+            <div class="header-action-strip font-mono">
+              <a href="https://github.com/deez-in" target="_blank" rel="noopener noreferrer" class="btn-tech btn-tech-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path>
+                </svg>
+                <span>GitHub Organization &nearr;</span>
+              </a>
+              <a href="https://github.com/deez-in/deezchatz-sdk-rust" target="_blank" rel="noopener noreferrer" class="btn-tech btn-tech-outline">
+                <span>deezchatz-sdk-rust &nearr;</span>
+              </a>
+              <a href="https://github.com/deez-in/deezchatz-cli" target="_blank" rel="noopener noreferrer" class="btn-tech btn-tech-outline">
+                <span>deezchatz-cli &nearr;</span>
+              </a>
+            </div>
+          </div>
+          <!-- Section 1: Cryptographic Specifications -->
+          <section id="specifications" class="doc-section">
+            <div class="section-tag font-mono">
+              <span>MATHEMATICAL PROTOCOLS</span>
+            </div>
+            <h2 class="section-title font-mono">1. Cryptographic Specifications</h2>
+            <p class="section-desc">
+              Following the modular design established by the Signal Foundation, DeezChatz relies on rigorously vetted open cryptographic standards. Each protocol provides mathematical guarantees that cannot be revoked or bypassed by server-side compromise.
+            </p>
+
+            <div class="specs-grid">
+              {specifications.map((spec) => (
+                <a
+                  href={spec.refLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="spec-card tech-card"
+                >
+                  <div class="spec-header">
+                    <span class="badge-tag font-mono">{spec.badge}</span>
+                    <span class="spec-link font-mono">
+                      <span>Signal Spec &nearr;</span>
+                    </span>
+                  </div>
+                  <h3 class="spec-name font-mono">{spec.name}</h3>
+                  <p class="spec-summary"><strong>Overview:</strong> {spec.summary}</p>
+                  <p class="spec-details">{spec.details}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+
+          <!-- Section 2: Core Cryptographic Engine -->
+          <section id="core-crypto" class="doc-section">
+            <div class="section-tag font-mono">
+              <span>LOW-LEVEL ENGINE</span>
+            </div>
+            <h2 class="section-title font-mono">2. Core Engine: libsignal-dezire</h2>
+            <p class="section-desc">
+              <code>libsignal-dezire</code> is our standalone, pure-Rust cryptographic implementation of the Signal Protocol primitives. Engineered strictly as an unopinionated mathematical foundation, it contains zero networking code, zero database dependencies, and zero runtime heap allocations in hot encryption paths.
+            </p>
+
+            <div class="tech-card lib-showcase">
+              <div class="lib-header font-mono">
+                <span class="lib-title">deez-in/libsignal-dezire</span>
+                <div class="lib-badges">
+                  <span class="badge-tag font-mono">RUST 2021</span>
+                  <span class="badge-tag font-mono">NO_STD COMPATIBLE</span>
+                  <span class="badge-tag font-mono">ZERO-ALLOC HOT PATHS</span>
+                </div>
+              </div>
+              <p class="lib-desc">
+                Acts as the foundational mathematical engine beneath the DeezChatz ecosystem. It exposes deterministic, low-level primitives for Curve25519 key generation, Diffie-Hellman handshakes, HKDF key derivation, and symmetric ratchets. Higher-level concerns—such as prekey bundle synchronization, SQLite/SQLCipher credential storage, and WebSocket dispatch—are cleanly decoupled and handled upstream by <code>deezchatz-sdk-rust</code>.
+              </p>
+              <div class="cli-box font-mono">
+                <span class="cli-prompt">$</span>
+                <span class="cli-command">cargo add libsignal-dezire --git https://github.com/deez-in/libsignal-dezire</span>
+              </div>
+            </div>
+
+            <!-- Architectural Pillars Grid -->
+            <div class="modules-grid" style="margin-top: 1.5rem;">
+              <div class="module-card tech-card">
+                <div class="module-header font-mono">
+                  <h4 class="module-title">Asymmetric Primitives</h4>
+                  <span class="badge-tag">CURVE25519</span>
+                </div>
+                <p class="module-p">
+                  Scalar multiplication for X3DH exchanges, combined with VXEdDSA and XEdDSA digital signatures. Allows identical Curve25519 key pairs to execute both Diffie-Hellman handshakes and verifiable random function (VRF) signatures without private key conversion hazards.
+                </p>
+                <span class="badge-tag font-mono">X25519 · Ed25519 · VXEdDSA</span>
+              </div>
+
+              <div class="module-card tech-card">
+                <div class="module-header font-mono">
+                  <h4 class="module-title">Symmetric Ratchet Engine</h4>
+                  <span class="badge-tag">DOUBLE RATCHET</span>
+                </div>
+                <p class="module-p">
+                  Complete Double Ratchet state machine with dual KDF chains (Root Key &amp; Chain Key). Derives single-use 32-byte message keys (MK) per turn via AES-256-GCM. Delayed or out-of-order packets are automatically recovered by computing and caching skipped keys with bounded retention.
+                </p>
+                <span class="badge-tag font-mono">AES-256-GCM · HKDF-SHA256</span>
+              </div>
+
+              <div class="module-card tech-card">
+                <div class="module-header font-mono">
+                  <h4 class="module-title">Memory &amp; Timing Security</h4>
+                  <span class="badge-tag">ZEROIZE</span>
+                </div>
+                <p class="module-p">
+                  Strict memory hygiene ensures all secret scalars, private keys, and intermediate KDF buffers implement <code>Zeroize</code> on <code>Drop</code>. All MAC tag and signature verifications execute in constant time via <code>subtle::ConstantTimeEq</code> to neutralize side-channel timing leaks.
+                </p>
+                <span class="badge-tag font-mono">Constant-Time · Stack Allocated</span>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- Section 3: DeezChatz SDK (Rust) -->
+          <section id="sdk" class="doc-section">
+            <div class="section-tag font-mono">
+              <span>DEVELOPER ABSTRACTION LAYER</span>
+            </div>
+            <h2 class="section-title font-mono">3. DeezChatz SDK (deezchatz-sdk-rust)</h2>
+            <p class="section-desc">
+              While the raw specifications define complex mathematical equations and state machines, building production applications requires dealing with network delays, database locks, prekey exhaustion, and push notification tokens. 
+            </p>
+            <p class="section-desc">
+              The <strong>DeezChatz SDK</strong> acts as the unified bridge: it encapsulates all low-level ratchet math into straightforward, real-world steps while natively orchestrating identity, REST endpoints, and real-time message relays.
+            </p>
+
+            <!-- Deep Dive: Step Mapping -->
+            <div id="sdk-mapping" class="subsection">
+              <h3 class="subsection-title font-mono">Specifications vs. Real-World SDK Flow</h3>
+              <p class="subsection-desc">
+                Here is how the DeezChatz SDK translates mathematical specifications into developer-friendly operations:
+              </p>
+
+              <div class="mapping-table-wrap">
+                <table class="mapping-table font-mono">
+                  <thead>
+                    <tr>
+                      <th class="col-step">Protocol Step</th>
+                      <th class="col-spec">Raw Mathematical Specification</th>
+                      <th class="col-sdk">Encapsulated SDK Flow</th>
+                      <th class="col-benefit">Engineering Benefit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stepMappings.map((m) => (
+                      <tr>
+                        <td class="step-cell font-bold">{m.step}</td>
+                        <td class="spec-cell">{m.rawSpec}</td>
+                        <td class="sdk-cell"><code>{m.sdkFlow}</code></td>
+                        <td class="benefit-cell">{m.benefit}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- How the SDK Hooks Into the Backend -->
+            <div id="sdk-backend" class="subsection">
+              <h3 class="subsection-title font-mono">How the SDK Hooks Into Backend &amp; Infrastructure</h3>
+              <p class="subsection-desc">
+                The SDK handles both cryptography and system orchestration. It interfaces with <code>deezchatz-api</code> and push relays to create an airtight zero-knowledge communication pipeline:
+              </p>
+
+              <div class="architecture-diagram tech-card font-mono">
+                <div class="flow-header">ZERO-KNOWLEDGE MESSAGE DELIVERY PIPELINE</div>
+                <div class="flow-grid">
+                  <div class="flow-step">
+                    <div class="step-num">01. Identity &amp; Auth</div>
+                    <p class="step-text">SDK exchanges Google OAuth token with <code>deezchatz-api</code> for session JWT and publishes public Prekey bundles.</p>
+                    <span class="flow-target">→ deezchatz-api</span>
+                  </div>
+
+                  <div class="flow-step">
+                    <div class="step-num">02. Bundle Discovery</div>
+                    <p class="step-text">When initiating a chat, SDK requests Bob's active Signed Prekey and one One-Time Prekey (OPK) from API cache.</p>
+                    <span class="flow-target">→ deezchatz-api</span>
+                  </div>
+
+                  <div class="flow-step">
+                    <div class="step-num">03. Local Ratchet E2EE</div>
+                    <p class="step-text">SDK computes X3DH secret locally, constructs Double Ratchet state, and seals the payload with AES-256-GCM.</p>
+                    <span class="flow-target">→ Local Device Memory Only</span>
+                  </div>
+
+                  <div class="flow-step">
+                    <div class="step-num">04. Stateless Relay &amp; Push</div>
+                    <p class="step-text">Sealed envelope is submitted to stateless RMQTT relay. A blind webhook notifies recipient via APNs/FCM without message data.</p>
+                    <span class="flow-target">→ RMQTT Webhook / APNs / FCM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SDK Quickstart Code Walkthrough -->
+            <div id="sdk-example" class="subsection">
+              <h3 class="subsection-title font-mono">Quickstart Code Walkthrough</h3>
+              <p class="subsection-desc">
+                Integrating DeezChatz into any Rust backend service, CLI tool, or desktop application requires only a few lines of asynchronous code:
+              </p>
+
+              <div class="code-block tech-card font-mono">
+                <div class="code-header">
+                  <span class="code-lang">rust</span>
+                  <span class="code-title">examples/send_encrypted.rs</span>
+                </div>
+                <pre class="code-pre"><code><span class="c-kw">use</span> deezchatz_sdk::&#123;DeezClient, ClientConfig, MessagePayload&#125;;
+
+<span class="c-fn">#[tokio::main]</span>
+<span class="c-kw">async fn</span> <span class="c-fn">main</span>() -> Result&lt;(), Box&lt;<span class="c-kw">dyn</span> std::error::Error&gt;&gt; &#123;
+    <span class="c-comment">// 1. Initialize client with local encrypted SQLite storage</span>
+    <span class="c-kw">let</span> config = ClientConfig::new(<span class="c-str">"https://api.deez.in"</span>)
+        .with_storage_path(<span class="c-str">"./.deez_keystore.db"</span>);
+    <span class="c-kw">let mut</span> client = DeezClient::init(config).<span class="c-kw">await</span>?;
+
+    <span class="c-comment">// 2. Authenticate &amp; publish Pre-Key bundles if depleted</span>
+    client.ensure_prekeys_published(<span class="c-num">50</span>).<span class="c-kw">await</span>?;
+
+    <span class="c-comment">// 3. Start or resume an encrypted Double Ratchet session</span>
+    <span class="c-kw">let</span> recipient = <span class="c-str">"bob@deez.in"</span>;
+    <span class="c-kw">let mut</span> session = client.get_or_create_session(recipient).<span class="c-kw">await</span>?;
+
+    <span class="c-comment">// 4. Encrypt message payload (automatically advances ratchet chain)</span>
+    <span class="c-kw">let</span> ciphertext_envelope = session.encrypt_text(<span class="c-str">"Confidential intelligence payload"</span>)?;
+
+    <span class="c-comment">// 5. Dispatch sealed ciphertext via blind push relay</span>
+    client.dispatch_envelope(recipient, ciphertext_envelope).<span class="c-kw">await</span>?;
+    println!(<span class="c-str">"Message encrypted &amp; dispatched statelessly with zero metadata leaks."</span>);
+
+    Ok(())
+&#125;</code></pre>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 4: Clients & CLI Tools -->
+          <section id="clients-cli" class="doc-section">
+            <div class="section-tag font-mono">
+              <span>USER SURFACES &amp; TOOLING</span>
+            </div>
+            <h2 class="section-title font-mono">4. Clients &amp; CLI Tools</h2>
+            <p class="section-desc">
+              We provide both end-user mobile experiences and hacker-friendly terminal clients to interact with the DeezChatz mesh.
+            </p>
+
+            <div class="tools-grid">
+              <!-- deezchatz-cli -->
+              <div class="tool-card tech-card">
+                <div class="tool-top font-mono">
+                  <h3 class="tool-name">deezchatz-cli</h3>
+                  <a href="https://github.com/deez-in/deezchatz-cli" target="_blank" rel="noopener noreferrer" class="tool-link">
+                    <span>GitHub &nearr;</span>
+                  </a>
+                </div>
+                <div class="badge-tag font-mono">CLI / TERMINAL TOOL</div>
+                <p class="tool-desc">
+                  Interactive command-line tool built in Rust to inspect active ratchet sessions, test local X3DH exchanges, generate identity key backups, and interface directly with DeezChatz testnets from your shell.
+                </p>
+                <div class="cli-box font-mono">
+                  <span class="cli-prompt">$</span>
+                  <span class="cli-command">cargo install --git https://github.com/deez-in/deezchatz-cli</span>
+                </div>
+                <div class="cli-box font-mono">
+                  <span class="cli-prompt">$</span>
+                  <span class="cli-command">deezchatz-cli session inspect --peer bob@deez.in</span>
+                </div>
+              </div>
+
+              <!-- deezchatz-mobile -->
+              <div class="tool-card tech-card">
+                <div class="tool-top font-mono">
+                  <h3 class="tool-name">deezchatz-mobile</h3>
+                  <a href="https://github.com/deez-in/deezchatz-mobile" target="_blank" rel="noopener noreferrer" class="tool-link">
+                    <span>GitHub &nearr;</span>
+                  </a>
+                </div>
+                <div class="badge-tag font-mono">EXPO / REACT NATIVE CLIENT</div>
+                <p class="tool-desc">
+                  Cross-platform iOS and Android application built on Expo SDK 57. Powered by SQLCipher-encrypted local storage, native Google OAuth authentication, and C-FFI bindings to <code>libsignal-dezire</code>.
+                </p>
+                <div class="cli-box font-mono">
+                  <span class="cli-prompt">$</span>
+                  <span class="cli-command">git clone https://github.com/deez-in/deezchatz-mobile &amp;&amp; bun install</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 5: Backend & Infrastructure -->
+          <section id="backend-infra" class="doc-section">
+            <div class="section-tag font-mono">
+              <span>ZERO-TRUST CLOUD FABRIC</span>
+            </div>
+            <h2 class="section-title font-mono">5. Backend Engine &amp; Cloud Infrastructure</h2>
+            <p class="section-desc">
+              The backend architecture is engineered around the principle of absolute zero trust: servers never receive private keys, never decrypt messages, and maintain no permanent social graphs.
+            </p>
+
+            <div class="tools-grid">
+              <!-- deezchatz-api -->
+              <div class="tool-card tech-card">
+                <div class="tool-top font-mono">
+                  <h3 class="tool-name">deezchatz-api</h3>
+                  <a href="https://github.com/deez-in/deezchatz-api" target="_blank" rel="noopener noreferrer" class="tool-link">
+                    <span>GitHub &nearr;</span>
+                  </a>
+                </div>
+                <div class="badge-tag font-mono">RUST &amp; AXUM SERVER</div>
+                <p class="tool-desc">
+                  High-throughput backend engine. Responsible for Google OAuth credential exchange, managing ephemeral Prekey bundles in AWS DynamoDB, caching session presence in Redis, and firing push wake-up webhooks.
+                </p>
+                <div class="cli-box font-mono">
+                  <span class="cli-prompt">$</span>
+                  <span class="cli-command">git clone https://github.com/deez-in/deezchatz-api &amp;&amp; cargo run</span>
+                </div>
+              </div>
+
+              <!-- deezchatz-infra -->
+              <div class="tool-card tech-card">
+                <div class="tool-top font-mono">
+                  <h3 class="tool-name">deezchatz-infra</h3>
+                  <a href="https://github.com/deez-in/deezchatz-infra" target="_blank" rel="noopener noreferrer" class="tool-link">
+                    <span>GitHub &nearr;</span>
+                  </a>
+                </div>
+                <div class="badge-tag font-mono">ANSIBLE / INFRASTRUCTURE AS CODE</div>
+                <p class="tool-desc">
+                  Automated cluster provisioning and hardening playbooks for deploying DeezChatz relay nodes, RMQTT clusters, Redis Sentinel pairs, and zero-log production environments.
+                </p>
+                <div class="cli-box font-mono">
+                  <span class="cli-prompt">$</span>
+                  <span class="cli-command">ansible-playbook -i production site.yml</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 6: Native Modules & Bridge -->
+          <section id="native-modules" class="doc-section">
+            <div class="section-tag font-mono">
+              <span>REACT NATIVE / EXPO WRAPPERS</span>
+            </div>
+            <h2 class="section-title font-mono">6. React Native &amp; Expo Native Modules</h2>
+            <p class="section-desc">
+              Custom native bridges developed to bring high-performance native cryptography and low-latency audio encoding to mobile devices without compromising JavaScript engine thread performance.
+            </p>
+
+            <div class="modules-grid">
+              <div class="module-card tech-card">
+                <div class="module-header font-mono">
+                  <h4 class="module-title">expo-libsignal-dezire</h4>
+                  <a href="https://github.com/deez-in/expo-libsignal-dezire" target="_blank" rel="noopener noreferrer">Repo &nearr;</a>
+                </div>
+                <p class="module-p">
+                  Zero-copy C-FFI bridge compiling the Rust <code>libsignal-dezire</code> core directly into native Swift and Kotlin static libraries for instant ratchet operations on mobile threads.
+                </p>
+                <span class="badge-tag font-mono">Swift · Kotlin · Rust FFI</span>
+              </div>
+
+              <div class="module-card tech-card">
+                <div class="module-header font-mono">
+                  <h4 class="module-title">expo-google-native-oauth</h4>
+                  <a href="https://github.com/deez-in/expo-google-native-oauth" target="_blank" rel="noopener noreferrer">Repo &nearr;</a>
+                </div>
+                <p class="module-p">
+                  Lightweight Google Sign-In wrapper utilizing GIDSignIn on iOS and Android Credential Manager for native, webview-less identity authentication.
+                </p>
+                <span class="badge-tag font-mono">iOS GIDSignIn · Android Credential Mgr</span>
+              </div>
+
+              <div class="module-card tech-card">
+                <div class="module-header font-mono">
+                  <h4 class="module-title">expo-audio-opus</h4>
+                  <a href="https://github.com/deez-in/expo-audio-opus" target="_blank" rel="noopener noreferrer">Repo &nearr;</a>
+                </div>
+                <p class="module-p">
+                  Native audio recorder and player with in-memory PCM-to-Opus and Opus-to-PCM conversion for ultra-low bandwidth, end-to-end encrypted voice messages.
+                </p>
+                <span class="badge-tag font-mono">Rust · C-FFI · Opus Codec</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Back to Top / Help Box -->
+          <div class="docs-footer-box tech-card font-mono">
+            <div>
+              <div class="help-title">READY TO CONTRIBUTE OR INTEGRATE?</div>
+              <p class="help-desc">All repositories are 100% open source under permissive MIT / AGPL-3.0 licenses.</p>
+            </div>
+            <div class="help-actions">
+              <a href="https://github.com/deez-in" target="_blank" rel="noopener noreferrer" class="btn-tech btn-tech-primary">
+                <span>Browse All Repositories &rarr;</span>
+              </a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .docs-page {
+    padding-top: 2.5rem;
+    padding-bottom: 6rem;
+  }
+
+  /* Header Section */
+  .docs-header {
+    margin-bottom: 3.5rem;
+    max-width: 100%;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .breadcrumb a {
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--accent-primary);
+  }
+
+  .breadcrumb .sep {
+    color: var(--border-color);
+  }
+
+  .breadcrumb .current {
+    color: var(--accent-primary);
+  }
+
+  .docs-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .docs-title {
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+  }
+
+  .docs-lead {
+    font-size: 1.0625rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 1.75rem;
+    max-width: 64rem;
+  }
+
+  .header-action-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* Docs Layout */
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .docs-layout {
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 3rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .docs-layout {
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 3.75rem;
+    }
+  }
+
+  /* Sidebar Navigation */
+  .docs-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .docs-sidebar {
+      display: block;
+    }
+  }
+
+  .sidebar-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .sidebar-heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .sidebar-nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    font-size: 0.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .sidebar-link {
+    color: var(--text-secondary);
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+  }
+
+  .sidebar-link:hover {
+    color: var(--accent-primary);
+    transform: translateX(3px);
+  }
+
+  .sidebar-card {
+    padding: 1.125rem;
+    font-size: 0.6875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .card-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent-primary);
+    box-shadow: 0 0 8px var(--accent-primary);
+  }
+
+  .card-title {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .card-p {
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Main Content Styles */
+  .docs-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4.5rem;
+    min-width: 0;
+  }
+
+  .doc-section {
+    scroll-margin-top: calc(var(--header-height) + 2rem);
+  }
+
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .section-desc {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Specifications Grid */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .specs-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+  }
+
+  .spec-card {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .spec-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    background-color: var(--bg-card-hover);
+  }
+
+  .spec-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .spec-link {
+    font-size: 0.6875rem;
+    color: var(--accent-primary);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: transform 0.2s ease;
+  }
+
+  .spec-card:hover .spec-link {
+    transform: translate(2px, -2px);
+  }
+
+  .spec-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .spec-summary {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  .spec-details {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Lib Showcase */
+  .lib-showcase {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .lib-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .lib-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .lib-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .lib-desc {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* Subsections */
+  .subsection {
+    margin-top: 2.5rem;
+    scroll-margin-top: calc(var(--header-height) + 2rem);
+  }
+
+  .subsection-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .subsection-desc {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Mapping Table */
+  .mapping-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-card);
+  }
+
+  .mapping-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+    text-align: left;
+  }
+
+  .mapping-table th,
+  .mapping-table td {
+    padding: 0.875rem 0.875rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .mapping-table th {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 700;
+    white-space: normal;
+    font-size: 0.6875rem;
+    letter-spacing: 0.03em;
+  }
+
+  .col-step {
+    width: 20%;
+  }
+
+  .col-spec {
+    width: 32%;
+  }
+
+  .col-sdk {
+    width: 24%;
+  }
+
+  .col-benefit {
+    width: 24%;
+  }
+
+  .mapping-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .step-cell {
+    color: var(--accent-primary);
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    font-weight: 700;
+  }
+
+  .spec-cell {
+    color: var(--text-secondary);
+    line-height: 1.55;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .sdk-cell {
+    color: var(--accent-cyan);
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .sdk-cell code {
+    background-color: var(--terminal-bg);
+    color: var(--accent-cyan);
+    padding: 0.25rem 0.4rem;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
+  }
+
+  .benefit-cell {
+    color: var(--text-muted);
+    line-height: 1.55;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  @media (max-width: 680px) {
+    .mapping-table,
+    .mapping-table thead,
+    .mapping-table tbody,
+    .mapping-table th,
+    .mapping-table td,
+    .mapping-table tr {
+      display: block;
+      width: 100%;
+    }
+
+    .mapping-table thead {
+      display: none;
+    }
+
+    .mapping-table tr {
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem;
+    }
+
+    .mapping-table td {
+      padding: 0.35rem 0;
+      border-bottom: none;
+    }
+
+    .col-step,
+    .col-spec,
+    .col-sdk,
+    .col-benefit {
+      width: 100%;
+    }
+
+    .step-cell {
+      font-size: 0.875rem;
+      padding-bottom: 0.25rem;
+    }
+  }
+
+  /* Architecture Diagram Card */
+  .architecture-diagram {
+    padding: 1.75rem;
+  }
+
+  .flow-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .flow-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .flow-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .step-num {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+  }
+
+  .step-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .flow-target {
+    font-size: 0.6875rem;
+    color: var(--accent-cyan);
+    font-weight: 600;
+  }
+
+  /* Code Block Styling */
+  .code-block {
+    overflow: hidden;
+    padding: 0;
+    background-color: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 1.25rem;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--terminal-border);
+    font-size: 0.6875rem;
+  }
+
+  .code-lang {
+    color: var(--accent-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .code-title {
+    color: var(--text-muted);
+  }
+
+  .code-pre {
+    padding: 1.25rem;
+    margin: 0;
+    overflow-x: auto;
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    color: var(--terminal-text);
+  }
+
+  .c-kw { color: #f43f5e; font-weight: 600; }
+  .c-fn { color: #38bdf8; }
+  .c-str { color: #4ade80; }
+  .c-num { color: #fbbf24; }
+  .c-comment { color: #64748b; font-style: italic; }
+
+  /* Tools & Backend Grid */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .tools-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .tool-card {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .tool-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tool-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .tool-link {
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    font-weight: 600;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .tool-link:hover {
+    opacity: 0.85;
+    transform: translate(2px, -2px);
+  }
+
+  .tool-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  /* CLI Boxes */
+  .cli-box {
+    background-color: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--terminal-text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
+
+  .cli-prompt {
+    color: var(--accent-primary);
+    font-weight: 700;
+    user-select: none;
+  }
+
+  .cli-command {
+    color: var(--terminal-text);
+  }
+
+  /* Modules Grid */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .modules-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .module-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .module-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .module-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .module-header a {
+    font-size: 0.6875rem;
+    color: var(--accent-primary);
+    font-weight: 600;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .module-header a:hover {
+    opacity: 0.85;
+    transform: translate(2px, -2px);
+  }
+
+  .module-p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    flex: 1;
+  }
+
+  /* Docs Footer Box */
+  .docs-footer-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem 2.25rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    background-color: var(--bg-card);
+    border-left: 3px solid var(--accent-primary);
+  }
+
+  @media (min-width: 768px) {
+    .docs-footer-box {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .help-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .help-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+</style>

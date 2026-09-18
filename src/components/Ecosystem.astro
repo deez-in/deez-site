@@ -8,16 +8,28 @@ interface EcosystemItem {
 
 const coreComponents: EcosystemItem[] = [
   {
+    title: 'libsignal-dezire',
+    desc: 'Pure-Rust implementation of the Signal Protocol (X3DH, Double Ratchet, VXEdDSA) for high-assurance E2EE messaging.',
+    tags: ['Rust', 'Crypto', 'X3DH', 'Double Ratchet', 'VXEdDSA'],
+    githubUrl: 'https://github.com/deez-in/libsignal-dezire',
+  },
+  {
+    title: 'deezchatz-sdk-rust',
+    desc: 'Official Rust SDK encapsulating full Signal Protocol flows, identity keys, prekey sync, and zero-trust backend integration.',
+    tags: ['Rust', 'SDK', 'E2EE', 'Signal Protocol', 'Async'],
+    githubUrl: 'https://github.com/deez-in/deezchatz-sdk-rust',
+  },
+  {
     title: 'deezchatz-mobile',
     desc: 'Cross-platform mobile app made using Expo (SDK 57) on top of React Native with SQLCipher encrypted storage.',
     tags: ['React Native', 'Expo', 'TypeScript', 'SQLCipher', 'Zustand'],
     githubUrl: 'https://github.com/deez-in/deezchatz-mobile',
   },
   {
-    title: 'libsignal-dezire',
-    desc: 'Pure-Rust implementation of the Signal Protocol (X3DH, Double Ratchet, VXEdDSA) for high-assurance E2EE messaging.',
-    tags: ['Rust', 'Crypto', 'X3DH', 'Double Ratchet', 'VXEdDSA'],
-    githubUrl: 'https://github.com/deez-in/libsignal-dezire',
+    title: 'deezchatz-cli',
+    desc: 'Command-line tool to interact with DeezChatz, inspect cryptographic sessions, generate prekeys, and test live relays.',
+    tags: ['Rust', 'CLI', 'Terminal', 'Debugging', 'E2EE'],
+    githubUrl: 'https://github.com/deez-in/deezchatz-cli',
   },
   {
     title: 'deezchatz-api',
@@ -33,6 +45,12 @@ const supportingLibraries: EcosystemItem[] = [
     desc: 'Expo React Native native module bridge exposing the libsignal-dezire Rust cryptographic engine via C-FFI.',
     tags: ['Swift', 'Kotlin', 'Rust FFI', 'Expo'],
     githubUrl: 'https://github.com/deez-in/expo-libsignal-dezire',
+  },
+  {
+    title: 'expo-audio-opus',
+    desc: 'Expo audio module to record & play Opus audio with high-performance PCM-to-OPUS conversion.',
+    tags: ['Rust', 'Expo', 'Audio', 'Opus', 'PCM'],
+    githubUrl: 'https://github.com/deez-in/expo-audio-opus',
   },
   {
     title: 'expo-google-native-oauth',
@@ -59,7 +77,6 @@ const supportingLibraries: EcosystemItem[] = [
   <div class="container">
     <div class="section-header">
       <div class="section-tag">
-        <span class="pulse-indicator"></span>
         <span>Architecture &amp; Repositories</span>
       </div>
       <h2 class="section-title">DeezChatz Ecosystem</h2>
@@ -100,7 +117,7 @@ const supportingLibraries: EcosystemItem[] = [
       <h3 class="group-title font-mono">
         <span class="title-bracket">[</span> Supporting Libraries &amp; Infrastructure <span class="title-bracket">]</span>
       </h3>
-      <div class="grid-cards grid-4">
+      <div class="grid-cards">
         {supportingLibraries.map((item) => (
           <a href={item.githubUrl} target="_blank" rel="noopener noreferrer" class="tech-card group-hover-box ecosystem-card-link">
             <div class="card-top font-mono">
@@ -153,7 +170,7 @@ const supportingLibraries: EcosystemItem[] = [
     gap: 1.25rem;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 640px) {
     .grid-cards {
       grid-template-columns: repeat(2, 1fr);
     }
@@ -162,15 +179,6 @@ const supportingLibraries: EcosystemItem[] = [
   @media (min-width: 1024px) {
     .grid-cards {
       grid-template-columns: repeat(3, 1fr);
-    }
-    .grid-4 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1200px) {
-    .grid-4 {
-      grid-template-columns: repeat(4, 1fr);
     }
   }
 

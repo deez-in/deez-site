@@ -27,7 +27,6 @@ const faqs = [
   <div class="container">
     <div class="section-header">
       <div class="section-tag">
-        <span class="pulse-indicator"></span>
         <span>Technical FAQ</span>
       </div>
       <h2 class="section-title">Frequently Asked Questions</h2>
@@ -51,23 +50,6 @@ const faqs = [
       ))}
     </div>
 
-    <!-- Contact & Connect Box (inspired by dkmondal.in let's connect section) -->
-    <div class="connect-box tech-card">
-      <div class="connect-content">
-        <h3 class="connect-title font-mono">Need Custom Deployment or Security Audit?</h3>
-        <p class="connect-desc">
-          Whether you are an enterprise seeking private high-security relay deployments, an independent security researcher submitting a vulnerability, or just curious about our crypto specs:
-        </p>
-        <div class="connect-actions">
-          <a href="mailto:security@deez.in" class="btn-tech btn-tech-primary font-mono">
-            Contact Cryptography Team &rarr;
-          </a>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn-tech btn-tech-outline font-mono">
-            Security Bug Bounty &nearr;
-          </a>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -76,7 +58,6 @@ const faqs = [
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-bottom: 3.5rem;
   }
 
   .faq-item {
@@ -129,33 +110,5 @@ const faqs = [
     line-height: 1.65;
     border-top: 1px solid var(--border-subtle);
     padding-top: 1rem;
-  }
-
-  /* Connect Banner */
-  .connect-box {
-    padding: 2.5rem;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-  }
-
-  .connect-title {
-    font-size: clamp(1.25rem, 2vw, 1.625rem);
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 0.75rem;
-  }
-
-  .connect-desc {
-    font-size: 0.9375rem;
-    color: var(--text-secondary);
-    max-width: 44rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-  }
-
-  .connect-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
   }
 </style>

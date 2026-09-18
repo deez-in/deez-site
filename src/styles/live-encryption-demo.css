@@ -158,8 +158,6 @@
 
 .ciphertext-box {
   color: var(--accent-primary);
-  background-color: var(--terminal-bg);
-  border-color: var(--terminal-border);
 }
 
 .decrypted-box {

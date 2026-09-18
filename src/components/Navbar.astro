@@ -11,21 +11,16 @@ const { currentPath = '/' } = Astro.props;
     <!-- Brand Logo -->
     <a href="/" class="brand-logo" aria-label="DeezChatz on deez.in">
       <span class="logo-text">deez<span class="logo-ext">.in</span></span>
-      <span class="crypto-status">
-        <span class="pulse-indicator"></span>
-        <span class="status-label">E2EE: SECURE</span>
-      </span>
     </a>
 
     <!-- Desktop Navigation -->
     <nav class="nav-desktop" aria-label="Main Navigation">
       <a href="/#demo" class:list={["nav-link", { active: currentPath === '/#demo' }]}>Live Demo</a>
       <a href="/#ecosystem" class:list={["nav-link", { active: currentPath === '/#ecosystem' }]}>Ecosystem</a>
+      <a href="/docs" class:list={["nav-link", { active: currentPath === '/docs' }]}>Docs</a>
       <a href="/#features" class:list={["nav-link", { active: currentPath === '/#features' }]}>Features</a>
       <a href="/#opensource" class:list={["nav-link", { active: currentPath === '/#opensource' }]}>Open Source</a>
       <a href="/#faq" class:list={["nav-link", { active: currentPath === '/#faq' }]}>FAQ</a>
-      <a href="/tos" class:list={["nav-link", { active: currentPath === '/tos' }]}>Terms</a>
-      <a href="/privacy" class:list={["nav-link", { active: currentPath === '/privacy' }]}>Privacy</a>
     </nav>
 
     <!-- Header Actions -->
@@ -68,18 +63,11 @@ const { currentPath = '/' } = Astro.props;
     <nav class="mobile-nav-links">
       <a href="/#demo" class="mobile-nav-link">Live Demo</a>
       <a href="/#ecosystem" class="mobile-nav-link">Ecosystem</a>
+      <a href="/docs" class="mobile-nav-link">Documentation</a>
       <a href="/#features" class="mobile-nav-link">Features</a>
       <a href="/#opensource" class="mobile-nav-link">Open Source</a>
       <a href="/#faq" class="mobile-nav-link">FAQ</a>
-      <a href="/tos" class="mobile-nav-link">Terms of Service</a>
-      <a href="/privacy" class="mobile-nav-link">Privacy Policy</a>
     </nav>
-    <div class="mobile-footer">
-      <span class="crypto-status">
-        <span class="pulse-indicator"></span>
-        <span class="status-label">ZERO-KNOWLEDGE PROTOCOL</span>
-      </span>
-    </div>
   </div>
 </header>
 
@@ -132,25 +120,6 @@ const { currentPath = '/' } = Astro.props;
     color: var(--accent-primary);
   }
 
-  .crypto-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.175rem 0.55rem;
-    background: var(--accent-primary-light);
-    border: 1px solid var(--accent-primary-glow);
-    border-radius: var(--radius-sm);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--accent-primary);
-  }
-
-  @media (max-width: 640px) {
-    .crypto-status {
-      display: none;
-    }
-  }
 
   /* Desktop Nav */
   .nav-desktop {
