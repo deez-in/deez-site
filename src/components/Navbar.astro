@@ -10,6 +10,7 @@ const { currentPath = '/' } = Astro.props;
   <div class="navbar-container">
     <!-- Brand Logo -->
     <a href="/" class="brand-logo" aria-label="DeezChatz on deez.in">
+      <img src="/favicon.png" alt="DeezChatz Logo" class="brand-logo-img" width="36" height="36" />
       <span class="logo-text">deez<span class="logo-ext">.in</span></span>
     </a>
 
@@ -17,10 +18,10 @@ const { currentPath = '/' } = Astro.props;
     <nav class="nav-desktop" aria-label="Main Navigation">
       <a href="/#demo" class:list={["nav-link", { active: currentPath === '/#demo' }]}>Live Demo</a>
       <a href="/#ecosystem" class:list={["nav-link", { active: currentPath === '/#ecosystem' }]}>Ecosystem</a>
-      <a href="/docs" class:list={["nav-link", { active: currentPath === '/docs' }]}>Docs</a>
       <a href="/#features" class:list={["nav-link", { active: currentPath === '/#features' }]}>Features</a>
       <a href="/#opensource" class:list={["nav-link", { active: currentPath === '/#opensource' }]}>Open Source</a>
       <a href="/#faq" class:list={["nav-link", { active: currentPath === '/#faq' }]}>FAQ</a>
+      <a href="/docs" class:list={["nav-link", "nav-link-accent", { active: currentPath === '/docs' }]}>Docs</a>
     </nav>
 
     <!-- Header Actions -->
@@ -63,10 +64,10 @@ const { currentPath = '/' } = Astro.props;
     <nav class="mobile-nav-links">
       <a href="/#demo" class="mobile-nav-link">Live Demo</a>
       <a href="/#ecosystem" class="mobile-nav-link">Ecosystem</a>
-      <a href="/docs" class="mobile-nav-link">Documentation</a>
       <a href="/#features" class="mobile-nav-link">Features</a>
       <a href="/#opensource" class="mobile-nav-link">Open Source</a>
       <a href="/#faq" class="mobile-nav-link">FAQ</a>
+      <a href="/docs" class="mobile-nav-link mobile-nav-link-accent">Documentation</a>
     </nav>
   </div>
 </header>
@@ -120,6 +121,18 @@ const { currentPath = '/' } = Astro.props;
     color: var(--accent-primary);
   }
 
+  .brand-logo-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .brand-logo:hover .brand-logo-img {
+    transform: scale(1.05);
+  }
+
 
   /* Desktop Nav */
   .nav-desktop {
@@ -161,6 +174,14 @@ const { currentPath = '/' } = Astro.props;
 
   .nav-link:hover::after, .nav-link.active::after {
     width: 100%;
+  }
+
+  .nav-link.nav-link-accent {
+    color: var(--accent-primary);
+  }
+
+  .nav-link.nav-link-accent:hover {
+    color: var(--accent-primary-hover);
   }
 
   /* Actions */
@@ -275,6 +296,10 @@ const { currentPath = '/' } = Astro.props;
   }
 
   .mobile-nav-link:hover {
+    color: var(--accent-primary);
+  }
+
+  .mobile-nav-link.mobile-nav-link-accent {
     color: var(--accent-primary);
   }
 
