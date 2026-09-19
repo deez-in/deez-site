@@ -27,6 +27,7 @@ const {
     <!-- SEO & Metadata -->
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <meta name="theme-color" content="#0a0a0a" />
 
     <!-- Open Graph / Facebook -->
