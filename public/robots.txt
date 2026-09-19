@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://deez.in/sitemap-index.xml
