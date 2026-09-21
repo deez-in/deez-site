@@ -1,110 +1,199 @@
 ---
 interface EcosystemItem {
-  title: string;
-  desc: string;
-  tags: string[];
-  githubUrl: string;
+  name: string;
+  description: string;
+  tech: string[];
+  url: string;
+  version?: string;
+  colSpan?: string;
 }
 
-const coreComponents: EcosystemItem[] = [
+const coreRepos: EcosystemItem[] = [
   {
-    title: 'libsignal-dezire',
-    desc: 'Pure-Rust implementation of the Signal Protocol (X3DH, Double Ratchet, VXEdDSA) for high-assurance E2EE messaging.',
-    tags: ['Rust', 'Crypto', 'X3DH', 'Double Ratchet', 'VXEdDSA'],
-    githubUrl: 'https://github.com/deez-in/libsignal-dezire',
+    name: "deezchatz-mobile",
+    description:
+      "Cross-platform end-to-end encrypted messaging application built with React Native and Expo.",
+    tech: ["React Native", "Expo", "TypeScript", "E2EE"],
+    url: "https://github.com/deez-in/deezchatz-mobile",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-2",
   },
   {
-    title: 'deezchatz-sdk-rust',
-    desc: 'Official Rust SDK encapsulating full Signal Protocol flows, identity keys, prekey sync, and zero-trust backend integration.',
-    tags: ['Rust', 'SDK', 'E2EE', 'Signal Protocol', 'Async'],
-    githubUrl: 'https://github.com/deez-in/deezchatz-sdk-rust',
+    name: "deezchatz-api",
+    description:
+      "High-throughput backend service handling cryptographic key exchange, sessions, and real-time message routing.",
+    tech: ["Rust", "Axum", "Redis", "Distributed"],
+    url: "https://github.com/deez-in/deezchatz-api",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-2",
   },
   {
-    title: 'deezchatz-mobile',
-    desc: 'Cross-platform mobile app made using Expo (SDK 57) on top of React Native with SQLCipher encrypted storage.',
-    tags: ['React Native', 'Expo', 'TypeScript', 'SQLCipher', 'Zustand'],
-    githubUrl: 'https://github.com/deez-in/deezchatz-mobile',
+    name: "libsignal-dezire",
+    description:
+      "Pure-Rust Signal Protocol implementation (X3DH, Double Ratchet) engineered for high performance and cross-platform FFI.",
+    tech: ["Rust", "Signal Protocol", "Cryptography", "FFI"],
+    url: "https://github.com/deez-in/libsignal-dezire",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-1",
   },
   {
-    title: 'deezchatz-cli',
-    desc: 'Command-line tool to interact with DeezChatz, inspect cryptographic sessions, generate prekeys, and test live relays.',
-    tags: ['Rust', 'CLI', 'Terminal', 'Debugging', 'E2EE'],
-    githubUrl: 'https://github.com/deez-in/deezchatz-cli',
+    name: "deezchatz-sdk-rust",
+    description:
+      "Asynchronous client SDK encapsulating Signal Protocol ratchets, stateless VXEdDSA REST authentication, event-driven MQTT networking, and pluggable storage traits.",
+    tech: ["Rust", "Tokio", "Signal Protocol", "MQTT"],
+    url: "https://github.com/deez-in/deezchatz-sdk-rust",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-1",
   },
   {
-    title: 'deezchatz-api',
-    desc: 'Zero-trust backend engine built with Rust & Axum for identity registration, pre-key bundle serving, and push triggers.',
-    tags: ['Rust', 'Axum', 'DynamoDB', 'Redis', 'RMQTT'],
-    githubUrl: 'https://github.com/deez-in/deezchatz-api',
+    name: "deezchatz-cli",
+    description:
+      "Terminal-native client featuring an Elm-architecture Ratatui TUI, headless scriptable subcommands, multi-database SQLCipher storage, and OS keyring integration.",
+    tech: ["Rust", "Ratatui", "SQLCipher", "E2EE"],
+    url: "https://github.com/deez-in/deezchatz-cli",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-1",
+  },
+  {
+    name: "deezchatz-infra",
+    description:
+      "Ansible playbooks and infrastructure automation for provisioning and maintaining the DeezChatz cloud infrastructure.",
+    tech: ["Ansible", "IaC", "Linux", "DevOps"],
+    url: "https://github.com/deez-in/deezchatz-infra",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-1",
   },
 ];
 
-const supportingLibraries: EcosystemItem[] = [
+const supportingRepos: EcosystemItem[] = [
   {
-    title: 'expo-libsignal-dezire',
-    desc: 'Expo React Native native module bridge exposing the libsignal-dezire Rust cryptographic engine via C-FFI.',
-    tags: ['Swift', 'Kotlin', 'Rust FFI', 'Expo'],
-    githubUrl: 'https://github.com/deez-in/expo-libsignal-dezire',
+    name: "expo-libsignal-dezire",
+    description:
+      "Expo React Native native module wrapper for libsignal-dezire providing cryptographic primitives to iOS and Android.",
+    tech: ["Swift", "React Native", "Expo", "E2EE"],
+    url: "https://github.com/deez-in/expo-libsignal-dezire",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-2",
   },
   {
-    title: 'expo-audio-opus',
-    desc: 'Expo audio module to record & play Opus audio with high-performance PCM-to-OPUS conversion.',
-    tags: ['Rust', 'Expo', 'Audio', 'Opus', 'PCM'],
-    githubUrl: 'https://github.com/deez-in/expo-audio-opus',
+    name: "expo-audio-opus",
+    description:
+      "Native Expo audio alternative to record & play .ogg files with bidirectional PCM to OPUS encoding and decoding.",
+    tech: ["Rust", "Swift", "Kotlin", "Audio"],
+    url: "https://github.com/deez-in/expo-audio-opus",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-2",
   },
   {
-    title: 'expo-google-native-oauth',
-    desc: 'Native Google OAuth integration for Expo using GIDSignIn on iOS and Android Credential Manager.',
-    tags: ['TypeScript', 'Swift', 'Kotlin', 'OAuth'],
-    githubUrl: 'https://github.com/deez-in/expo-google-native-oauth',
+    name: "expo-native-mqtt",
+    description:
+      "High-performance native MQTT client bindings for Expo applications wrapping HiveMQ (Android) and CocoaMQTT (iOS).",
+    tech: ["Kotlin", "Swift", "Expo", "MQTT"],
+    url: "https://github.com/deez-in/expo-native-mqtt",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-2 md-col-span-2",
   },
   {
-    title: 'expo-native-mqtt',
-    desc: 'Native MQTT client bindings for Expo wrapping CocoaMQTT on iOS and HiveMQ on Android.',
-    tags: ['Kotlin', 'Swift', 'HiveMQ', 'CocoaMQTT'],
-    githubUrl: 'https://github.com/deez-in/expo-native-mqtt',
+    name: "expo-google-native-oauth",
+    description:
+      "Native Google OAuth module for Expo React Native utilizing GIDSignIn on iOS and Credential Manager on Android.",
+    tech: ["TypeScript", "OAuth", "Android", "iOS"],
+    url: "https://github.com/deez-in/expo-google-native-oauth",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-1",
   },
   {
-    title: 'deezchatz-infra',
-    desc: 'Ansible playbooks and Infrastructure-as-Code for automating DeezChatz cluster provisioning and maintenance.',
-    tags: ['Ansible', 'Jinja', 'Docker', 'Linux'],
-    githubUrl: 'https://github.com/deez-in/deezchatz-infra',
+    name: "deez-site",
+    description:
+      "The official web portal and showcase landing page for the deez.in organization and DeezChatz ecosystem.",
+    tech: ["Astro", "TypeScript", "Web", "Cloudflare"],
+    url: "https://github.com/deez-in/deez-site",
+    version: "v0.1.0",
+    colSpan: "lg-col-span-1",
   },
 ];
 ---
 
 <section id="ecosystem" class="section">
   <div class="container">
-    <div class="section-header">
-      <div class="section-tag">
-        <span>Architecture &amp; Repositories</span>
+    <div class="section-header-row">
+      <div class="section-header-text">
+        <div class="section-tag">
+          <span>Architecture &amp; Repositories</span>
+        </div>
+        <h2 class="section-title">DeezChatz Ecosystem</h2>
+        <p class="section-subtitle">
+          A modular, defense-in-depth architecture designed from the ground up for zero-knowledge privacy, verifiable open source security, and blinding-fast delivery.
+        </p>
       </div>
-      <h2 class="section-title">DeezChatz Ecosystem</h2>
-      <p class="section-subtitle">
-        A modular, defense-in-depth architecture designed from the ground up for zero-knowledge privacy, verifiable open source security, and blinding-fast delivery.
-      </p>
+      <a
+        href="https://github.com/deez-in"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="github-org-link font-mono"
+      >
+        <span>github.com/deez-in</span>
+        <svg
+          class="github-org-arrow"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+          ></path>
+        </svg>
+      </a>
     </div>
 
     <!-- Core Components -->
     <div class="ecosystem-group">
-      <h3 class="group-title font-mono">
-        <span class="title-bracket">[</span> Core Components <span class="title-bracket">]</span>
-      </h3>
-      <div class="grid-cards">
-        {coreComponents.map((item) => (
-          <a href={item.githubUrl} target="_blank" rel="noopener noreferrer" class="tech-card group-hover-box ecosystem-card-link">
-            <div class="card-top font-mono">
-              <h4 class="card-name font-mono">{item.title}</h4>
-              <span class="card-github-icon">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+      <div class="group-header">
+        <h3 class="group-title font-mono">
+          <span class="title-bracket">[</span> Core Components <span class="title-bracket">]</span>
+        </h3>
+      </div>
+      <div class="bento-grid-cards">
+        {coreRepos.map((repo) => (
+          <a
+            href={repo.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`repo-modal-trigger repo-card ${repo.colSpan || ""}`}
+            data-repo-name={repo.name}
+            data-repo-url={repo.url}
+            data-repo-desc={repo.description}
+            data-repo-tech={JSON.stringify(repo.tech)}
+            data-repo-version={repo.version}
+          >
+            <div class="card-content-top">
+              <div class="card-header">
+                <h4 class="card-name font-mono truncate">
+                  {repo.name}
+                </h4>
+                <svg
+                  class="card-arrow-icon"
+                  viewBox="0 -960 960 960"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path d="M480-80 240-320l57-57 183 183 183-183 57 57L480-80ZM298-584l-58-56 240-240 240 240-58 56-182-182-182 182Z"></path>
                 </svg>
-              </span>
+              </div>
+              <p class="card-description">
+                {repo.description}
+              </p>
             </div>
-            <p class="card-description">{item.desc}</p>
-            <div class="card-tags">
-              {item.tags.map((tag) => (
-                <span class="badge-tag">{tag}</span>
+            <div class="card-tags-strip">
+              {repo.tech.map((t) => (
+                <span class="card-tech-tag font-mono">
+                  {t}
+                </span>
               ))}
             </div>
           </a>
@@ -114,24 +203,48 @@ const supportingLibraries: EcosystemItem[] = [
 
     <!-- Supporting Libraries & Infra -->
     <div class="ecosystem-group">
-      <h3 class="group-title font-mono">
-        <span class="title-bracket">[</span> Supporting Libraries &amp; Infrastructure <span class="title-bracket">]</span>
-      </h3>
-      <div class="grid-cards">
-        {supportingLibraries.map((item) => (
-          <a href={item.githubUrl} target="_blank" rel="noopener noreferrer" class="tech-card group-hover-box ecosystem-card-link">
-            <div class="card-top font-mono">
-              <h4 class="card-name font-mono">{item.title}</h4>
-              <span class="card-github-icon">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+      <div class="group-header">
+        <h3 class="group-title font-mono">
+          <span class="title-bracket">[</span> Supporting Libraries &amp; Infrastructure <span class="title-bracket">]</span>
+        </h3>
+      </div>
+      <div class="bento-grid-cards">
+        {supportingRepos.map((repo) => (
+          <a
+            href={repo.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`repo-modal-trigger repo-card ${repo.colSpan || ""}`}
+            data-repo-name={repo.name}
+            data-repo-url={repo.url}
+            data-repo-desc={repo.description}
+            data-repo-tech={JSON.stringify(repo.tech)}
+            data-repo-version={repo.version}
+          >
+            <div class="card-content-top">
+              <div class="card-header">
+                <h4 class="card-name font-mono truncate">
+                  {repo.name}
+                </h4>
+                <svg
+                  class="card-arrow-icon"
+                  viewBox="0 -960 960 960"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path d="M480-80 240-320l57-57 183 183 183-183 57 57L480-80ZM298-584l-58-56 240-240 240 240-58 56-182-182-182 182Z"></path>
                 </svg>
-              </span>
+              </div>
+              <p class="card-description">
+                {repo.description}
+              </p>
             </div>
-            <p class="card-description">{item.desc}</p>
-            <div class="card-tags">
-              {item.tags.map((tag) => (
-                <span class="badge-tag">{tag}</span>
+            <div class="card-tags-strip">
+              {repo.tech.map((t) => (
+                <span class="card-tech-tag font-mono">
+                  {t}
+                </span>
               ))}
             </div>
           </a>
@@ -141,7 +254,104 @@ const supportingLibraries: EcosystemItem[] = [
   </div>
 </section>
 
+<script>
+  function setupRepoTriggers() {
+    const cards = document.querySelectorAll(".repo-modal-trigger");
+    cards.forEach((card) => {
+      card.addEventListener("click", (e) => {
+        const mouseEvent = e as MouseEvent;
+        // Allow ctrl/cmd/middle-click to open direct GitHub link in new tab
+        if (
+          mouseEvent.ctrlKey ||
+          mouseEvent.metaKey ||
+          mouseEvent.shiftKey ||
+          mouseEvent.button !== 0
+        ) {
+          return;
+        }
+
+        e.preventDefault();
+        const el = card as HTMLElement;
+        const name = el.dataset.repoName || "";
+        const url = el.dataset.repoUrl || el.getAttribute("href") || "";
+        const description = el.dataset.repoDesc || "";
+        const version = el.dataset.repoVersion || "v0.1.0-dev";
+        const tech = el.dataset.repoTech ? JSON.parse(el.dataset.repoTech) : [];
+
+        if (typeof (window as any).openRepoModal === "function") {
+          (window as any).openRepoModal({
+            name,
+            url,
+            description,
+            tech,
+            defaultVersion: version,
+          });
+        }
+      });
+    });
+  }
+
+  setupRepoTriggers();
+  document.addEventListener("astro:page-load", setupRepoTriggers);
+</script>
+
 <style>
+  .section-header-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-header-row {
+      flex-direction: row;
+      align-items: flex-end;
+    }
+  }
+
+  .section-header-text {
+    max-width: 44rem;
+  }
+
+  .github-org-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.875rem;
+    background-color: var(--bg-card);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    align-self: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .github-org-link {
+      align-self: auto;
+    }
+  }
+
+  .github-org-link:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background-color: var(--accent-primary-light);
+  }
+
+  .github-org-arrow {
+    width: 0.875rem;
+    height: 0.875rem;
+    color: var(--accent-primary);
+    transition: transform 0.2s ease;
+  }
+
+  .github-org-link:hover .github-org-arrow {
+    transform: translate(2px, -2px);
+  }
+
   .ecosystem-group {
     margin-bottom: 3.5rem;
   }
@@ -150,11 +360,14 @@ const supportingLibraries: EcosystemItem[] = [
     margin-bottom: 0;
   }
 
+  .group-header {
+    margin-bottom: 1.5rem;
+  }
+
   .group-title {
     font-size: 1.125rem;
     font-weight: 700;
     color: var(--accent-primary);
-    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -164,72 +377,116 @@ const supportingLibraries: EcosystemItem[] = [
     color: var(--text-dim);
   }
 
-  .grid-cards {
+  /* Bento 4-column Grid */
+  .bento-grid-cards {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
 
-  @media (min-width: 640px) {
-    .grid-cards {
+  @media (min-width: 768px) {
+    .bento-grid-cards {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .md-col-span-2 {
+      grid-column: span 2;
     }
   }
 
   @media (min-width: 1024px) {
-    .grid-cards {
-      grid-template-columns: repeat(3, 1fr);
+    .bento-grid-cards {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .lg-col-span-2 {
+      grid-column: span 2;
+    }
+    .lg-col-span-1 {
+      grid-column: span 1;
     }
   }
 
-  .ecosystem-card-link {
-    text-decoration: none;
+  /* Project Card */
+  .repo-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    cursor: pointer;
   }
 
-  .card-top {
+  .repo-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.75rem;
+    gap: 0.5rem;
   }
 
   .card-name {
-    font-size: 1.0625rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--text-primary);
     letter-spacing: -0.01em;
     transition: color 0.2s ease;
+    min-width: 0;
   }
 
-  .tech-card:hover .card-name {
+  .repo-card:hover .card-name {
     color: var(--accent-primary);
   }
 
-  .card-github-icon {
+  .card-arrow-icon {
+    width: 1rem;
+    height: 1rem;
     color: var(--text-muted);
+    transform: rotate(45deg);
+    flex-shrink: 0;
     transition: color 0.2s ease, transform 0.2s ease;
   }
 
-  .tech-card:hover .card-github-icon {
+  .repo-card:hover .card-arrow-icon {
     color: var(--accent-primary);
-    transform: translate(2px, -2px);
+    transform: rotate(45deg) translate(2px, -2px);
   }
 
   .card-description {
     font-size: 0.875rem;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.625;
     margin-bottom: 1.25rem;
-    flex: 1;
-    min-height: 3.5rem;
+    min-height: 4.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .card-tags {
+  .card-tags-strip {
     display: flex;
     flex-wrap: wrap;
     gap: 0.375rem;
-    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .card-tech-tag {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.15rem 0.5rem;
   }
 </style>

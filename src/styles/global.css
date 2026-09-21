@@ -327,3 +327,10 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* Responsive Utilities */
+@media (max-width: 640px) {
+  .hidden-sm {
+    display: none !important;
+  }
+}

@@ -76,9 +76,10 @@ class CryptoMeshVisualizer {
   }
 
   private resize = () => {
-    if (!this.container || !this.canvas) return;
+    if (!this.container || !this.canvas || window.innerWidth <= 768) return;
     this.width = this.container.clientWidth;
     this.height = this.container.clientHeight;
+    if (this.width === 0 || this.height === 0) return;
     this.dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     this.canvas.width = this.width * this.dpr;
@@ -119,6 +120,7 @@ class CryptoMeshVisualizer {
   }
 
   public toggleInteractivity = () => {
+    if (window.innerWidth <= 768) return;
     this.isInteractive = !this.isInteractive;
     if (this.isInteractive) {
       this.container.classList.add('interactive-mode');
@@ -409,8 +411,10 @@ class CryptoMeshVisualizer {
   }
 
   private animate = () => {
-    this.update();
-    this.draw();
+    if (window.innerWidth > 768) {
+      this.update();
+      this.draw();
+    }
     this.animId = requestAnimationFrame(this.animate);
   };
 }

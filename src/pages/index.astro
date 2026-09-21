@@ -151,7 +151,7 @@ import Faq from '../components/Faq.astro';
   }
 
   .hero-title {
-    font-size: clamp(2.25rem, 5.2vw, 4.25rem);
+    font-size: clamp(1.75rem, 6vw, 4.25rem);
     font-weight: 800;
     letter-spacing: -0.04em;
     line-height: 1.1;
@@ -212,6 +212,12 @@ import Faq from '../components/Faq.astro';
     font-size: 0.875rem;
   }
 
+  @media (max-width: 768px) {
+    #explore-graph-btn {
+      display: none;
+    }
+  }
+
   .metrics-strip {
     display: inline-flex;
     flex-wrap: wrap;
@@ -231,6 +237,12 @@ import Faq from '../components/Faq.astro';
     }
     .metric-divider {
       display: none;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .metrics-strip {
+      grid-template-columns: 1fr;
     }
   }
 
