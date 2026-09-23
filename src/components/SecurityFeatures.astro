@@ -48,37 +48,15 @@
       </div>
 
       <!-- Bento Card 4: RAM-Only Blind Relays -->
-      <div class="tech-card bento-card">
+      <div class="tech-card bento-card bento-wide">
         <div class="card-icon font-mono">[ 04 ]</div>
         <h3 class="bento-title font-mono">RAM-Only Stateless Relays</h3>
         <p class="bento-desc">
           DeezChatz relay nodes run on stateless, diskless memory containers. Once an encrypted packet is acknowledged by the recipient, it is instantly purged from volatile memory forever.
         </p>
-        <div class="bento-badge font-mono">DISKLESS CLUSTERS</div>
-      </div>
-
-      <!-- Bento Card 5: Phone-less Zero-Knowledge Identity -->
-      <div class="tech-card bento-card">
-        <div class="card-icon font-mono">[ 05 ]</div>
-        <h3 class="bento-title font-mono">No Phone Numbers Required</h3>
-        <p class="bento-desc">
-          Never link your real-world identity, SIM card, or contacts. Accounts are purely based on self-generated Ed25519 public key pairs with zero-knowledge cryptographic authentication.
-        </p>
-        <div class="bento-badge font-mono">ZERO SIM / SMS LINK</div>
-      </div>
-
-      <!-- Bento Card 6: Hardware Enclave & Self-Destruct -->
-      <div class="tech-card bento-card bento-wide">
-        <div class="card-icon font-mono">[ 06 ]</div>
-        <h3 class="bento-title font-mono">Hardware Security Modules &amp; Ephemeral Burn</h3>
-        <p class="bento-desc">
-          Private keys never leave your device's hardware chip (Apple Secure Enclave, Android StrongBox, or YubiKey). Optional ephemeral message timers overwrite memory buffers with cryptographic random noise upon expiration.
-        </p>
-        <div class="secure-chips font-mono">
-          <span class="chip-item">Apple Secure Enclave</span>
-          <span class="chip-item">Android StrongBox</span>
-          <span class="chip-item">FIDO2 / YubiKey</span>
-          <span class="chip-item">DOD 5220.22-M Wipe</span>
+        <div class="code-snippet font-mono">
+          <div class="snippet-line"><span class="c-fn">packet</span> = EphemeralQueue::pop() &rarr; RAM_Only</div>
+          <div class="snippet-line"><span class="c-fn">zeroize_memory</span>(packet) &rarr; Zero Traces Retained</div>
         </div>
       </div>
     </div>
@@ -166,18 +144,4 @@
     font-weight: 600;
   }
 
-  .secure-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .chip-item {
-    font-size: 0.75rem;
-    padding: 0.35rem 0.75rem;
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-  }
 </style>

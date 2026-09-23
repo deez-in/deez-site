@@ -8,7 +8,7 @@
     <div>
       <div class="modal-header">
         <h3 id="modal-repo-name" class="modal-title font-mono truncate">
-          // repository-name
+          repository-name
         </h3>
         <button
           id="modal-close-btn"
@@ -58,7 +58,7 @@
     <!-- Dynamic Commits Section -->
     <div class="modal-commits-section">
       <div class="commits-header font-mono">
-        <span class="commits-title">// LATEST COMMITS (3)</span>
+        <span class="commits-title">LATEST COMMITS (3)</span>
         <span id="modal-cache-status" class="commits-cache-status"></span>
       </div>
 
@@ -520,7 +520,7 @@
       modalCommitsContainer.innerHTML = `
         <div class="commits-loading">
           <span style="color: var(--accent-primary);">⟳</span>
-          <span>// fetching latest 3 commits from GitHub...</span>
+          <span>fetching latest 3 commits from GitHub...</span>
         </div>
       `;
     }
@@ -531,7 +531,7 @@
       if (modalCacheStatus) modalCacheStatus.textContent = "fallback";
       modalCommitsContainer.innerHTML = `
         <div class="commits-fallback">
-          <div style="color: var(--text-muted); margin-bottom: 0.25rem;">// ${errorMsg}</div>
+          <div style="color: var(--text-muted); margin-bottom: 0.25rem;">${errorMsg}</div>
           <a
             href="${repoUrl}/commits"
             target="_blank"
@@ -552,7 +552,7 @@
       tech?: string[];
       defaultVersion?: string;
     }) {
-      if (modalRepoName) modalRepoName.textContent = `// ${repoData.name}`;
+      if (modalRepoName) modalRepoName.textContent = repoData.name;
       if (modalRepoUrl) modalRepoUrl.href = repoData.url;
       if (modalRepoUrlText) modalRepoUrlText.textContent = repoData.url;
       if (modalRepoDesc) modalRepoDesc.textContent = repoData.description;
