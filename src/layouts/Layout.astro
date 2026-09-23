@@ -31,8 +31,25 @@ const {
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <meta name="theme-color" content="#0a0a0a" />
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+      />
+    </noscript>
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site)} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="DeezChatz" />
@@ -43,6 +60,18 @@ const {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL('/og-image.png', Astro.site)} />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "DeezChatz",
+      "applicationCategory": "CommunicationApplication",
+      "operatingSystem": "Android, iOS, Linux, macOS, Windows",
+      "license": "https://opensource.org/licenses/MIT",
+      "url": "https://deez.in",
+      "description": description
+    })} />
 
     <!-- Anti-FOUC Theme Script -->
     <script is:inline>
@@ -64,6 +93,9 @@ const {
     </script>
   </head>
   <body>
+    <!-- Accessibility Skip Link -->
+    <a href="#main-content" class="skip-link font-mono">Skip to content</a>
+
     <!-- Background Atmosphere & Grid Layer (Deep Background) -->
     <div class="bg-glow-top" aria-hidden="true"></div>
     <div class="bg-grid-overlay" aria-hidden="true"></div>

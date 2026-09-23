@@ -2,15 +2,11 @@
 const faqs = [
   {
     q: 'Why should I trust DeezChatz over other messaging apps?',
-    a: 'DeezChatz operates on a strict zero-trust model: we implement the proven Signal Protocol via our pure-Rust libsignal-dezire engine, encrypt local storage with SQLCipher, strip metadata via stateless relays, and keep 100% of our code verifiable and open source.',
+    a: 'DeezChatz operates on a strict zero-trust model: we implement the proven Signal Protocol via our pure-Rust libsignal-dezire engine, encrypt local storage with SQLCipher, strip metadata via stateless relays, and keep 100% of our code verifiable and open source. All your messages, voice notes, and images are fully end-to-end encrypted and mathematically impossible for our servers to read.',
   },
   {
-    q: 'Can the DeezChatz team or server operators read my messages?',
-    a: 'Mathematically impossible. End-to-end encryption keys are generated locally on your client and never leave your hardware secure enclave. The relay server only routes opaque ciphertexts and cannot decrypt message content, images, or files.',
-  },
-  {
-    q: 'How does account recovery work without phone numbers?',
-    a: 'Your account is backed by an encrypted 24-word BIP-39 cryptographic seed phrase. You can export this seed phrase to backup your keys. Because we practice zero-knowledge, DeezChatz servers do NOT store your seed and cannot reset your account if lost.',
+    q: 'What happens if I lose my device? Is there account recovery?',
+    a: 'Because we practice zero-knowledge, DeezChatz servers do not store your older chats. There is no traditional "account recovery" to fetch old messages—you simply re-register on your new device to log in and start fresh. Your past conversations remain strictly local to your previous device.',
   },
   {
     q: 'How are push notifications handled without leaking metadata to Apple or Google?',
@@ -18,8 +14,12 @@ const faqs = [
   },
   {
     q: 'Can I run my own private DeezChatz relay node?',
-    a: 'Yes. Our relay crate (`deezchatz-relay`) is fully containerized. You can launch your own federated or isolated private relay cluster using our single-line Docker Compose file.',
+    a: 'Not yet. Although all of our relay infrastructure code is fully open source, it isn\'t currently designed or packaged for easy self-hosting. However, supporting private, self-hostable relay nodes is on our roadmap for the future.',
   },
+  {
+    q: 'Is DeezChatz really free? How do you make money?',
+    a: 'DeezChatz is 100% free and open source. We believe privacy is a fundamental human right. Development is funded by grants, donations, and optional premium features for enterprise relay hosting. We will never monetize your data.',
+  }
 ];
 ---
 
@@ -50,6 +50,30 @@ const faqs = [
       ))}
     </div>
 
+    <!-- Still have questions block -->
+    <div class="faq-contact-card tech-card">
+      <div class="faq-contact-content">
+        <div class="faq-contact-tag font-mono">// SUPPORT & FEEDBACK</div>
+        <h3 class="faq-contact-title font-mono">Still have questions?</h3>
+        <p class="faq-contact-desc">
+          Can't find what you're looking for? Open an issue on GitHub to discuss technical details or reach out directly via email.
+        </p>
+      </div>
+      <div class="faq-contact-actions font-mono">
+        <a href="https://github.com/deez-in/deezchatz-mobile/issues" target="_blank" rel="noopener noreferrer" class="btn-tech btn-tech-primary faq-action-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path>
+          </svg>
+          <span>Open GitHub Issue &nearr;</span>
+        </a>
+        <a href="mailto:admin@deez.in" class="btn-tech btn-tech-outline faq-action-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+          <span>admin@deez.in</span>
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -58,6 +82,7 @@ const faqs = [
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-bottom: 2.5rem;
   }
 
   .faq-item {
@@ -110,5 +135,58 @@ const faqs = [
     line-height: 1.65;
     border-top: 1px solid var(--border-subtle);
     padding-top: 1rem;
+  }
+
+  /* Contact Card */
+  .faq-contact-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .faq-contact-card {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .faq-contact-content {
+    max-width: 32rem;
+  }
+
+  .faq-contact-tag {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .faq-contact-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .faq-contact-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .faq-contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+  }
+
+  .faq-action-btn {
+    padding: 0.55rem 1.15rem;
+    font-size: 0.75rem;
   }
 </style>
